@@ -59,16 +59,37 @@ const char waves[5][3]={ /*Static waves for pond*/
 
 /* Global structures/classes */
 
+/*-----------------------ENVIRONMENT CLASSES-------------------------*/
+class Woods {
+  public:
+    int x_livingarea;
+    int y_livingarea;
+};
 
-//player should may be a window
+class ThickTree : public Woods {
+  public:
+    void Spawn(int up_y, int up_x, 
+                        int mid_y, int mid_x,
+                        int bottom_y, int bottom_x) 
+    { /*Upper part of the tree*/
+      mvaddstr(up_y, up_x, " /|\\ ");
+      mvaddstr(mid_y, mid_x, "//|\\\\ ");
+      mvaddstr(bottom_y, bottom_x, "  I  ");
+    }
+};
 
-//checkpoint system, like a password.
-
-/*There could be a function which is always used when the game want's
-save progress. The game creates, if one does not exist, a file and
-write down the code there, so if you want to quit and continue later
-you can use the password to skip to the point you were last time.
-and there should be also
+class ThinTree : public Woods {
+  public:
+    void Spawn(int up_y, int up_x, 
+                        int mid_y, int mid_x,
+                        int bottom_y, int bottom_x) 
+    {
+      mvaddstr(up_y, up_x, "  ^  ");
+      mvaddstr(mid_y, mid_x, " /|\\ ");
+      mvaddstr(bottom_y, bottom_x, " I ");
+    }
+};
+/*-------------------------------------------------------------------*/
 
 /*-------------------------------------------------------------------*
 *    FUNCTION PROTOTYPES                                             *
@@ -84,6 +105,11 @@ void PrintParkWoods();
 void PrintStation();
 void PrintDebugInfo();
 
+/*There could be a function which is always used when the game want's
+save progress. The game creates, if one does not exist, a file and
+write down the code there, so if you want to quit and continue later
+you can use the password to skip to the point you were last time.
+
 /*********************************************************************
 *    MAIN PROGRAM                                                      *
 **********************************************************************/
@@ -96,7 +122,7 @@ int main(void)  {
    if (has_colors() == FALSE) {
     endwin();
     std::cout<<"Your terminal does not support color"<<std::endl;
-    usleep(5000000);
+    napms(3000);
     exit(1);
   }
 
@@ -111,6 +137,10 @@ int main(void)  {
   std::cout<<"Middle X = "<<MIDDLE_X_AXIS<<std::endl;*/
 
   PrintPark();
+  /*-----------------------------------------------------------------*/
+  PrintDebugInfo();
+  refresh();
+  napms(5000);
   endwin();
   return 0;
 }
@@ -135,10 +165,18 @@ void PrintPark() {
   refresh();
   WINDOW *middle_pond;
   WINDOW *leftsideof_pond;
+  WINDOW *downleftsideof_pond;
   WINDOW *rightsideof_pond;
+  WINDOW *downrightsideof_pond;
+  WINDOW *upleftsideof_pond;
+  WINDOW *uprightsideof_pond;
   middle_pond=create_middle_pond(10,10,MIDDLE_Y_AXIS-5,MIDDLE_X_AXIS-4);
-  leftsideof_pond=cr_leftsideof_pond(6,6,MIDDLE_Y_AXIS-3,MIDDLE_X_AXIS-10);
+  leftsideof_pond=cr_leftsideof_pond(6,5,MIDDLE_Y_AXIS-3,MIDDLE_X_AXIS-9);
   rightsideof_pond=cr_rightsideof_pond(6,5,MIDDLE_Y_AXIS-3,MIDDLE_X_AXIS+6);
+  downrightsideof_pond=cr_rightsideof_pond(1,3,MIDDLE_Y_AXIS+3,MIDDLE_X_AXIS+6);
+  downleftsideof_pond=cr_leftsideof_pond(1,3,MIDDLE_Y_AXIS+3,MIDDLE_X_AXIS-7);
+  upleftsideof_pond=cr_leftsideof_pond(1,3,MIDDLE_Y_AXIS-4,MIDDLE_X_AXIS-7);
+  uprightsideof_pond=cr_rightsideof_pond(1,3,MIDDLE_Y_AXIS-4,MIDDLE_X_AXIS+6);
 
   /*Creating the waves for the whole pond*/
   for (int i=0; i<5; i++) {
@@ -168,14 +206,36 @@ void PrintPark() {
   nodelay(stdscr, TRUE);
   keypad(rightsideof_pond, TRUE);
   keypad(stdscr, TRUE);
+  /*--------------------------------*/
+  nodelay(downleftsideof_pond, TRUE);
+  nodelay(stdscr, TRUE);
+  keypad(downleftsideof_pond, TRUE);
+  keypad(stdscr, TRUE);
+  nodelay(downrightsideof_pond, TRUE);
+  nodelay(stdscr, TRUE);
+  keypad(downrightsideof_pond, TRUE);
+  keypad(stdscr, TRUE);
+  /*-------------------------------*/
+  nodelay(upleftsideof_pond, TRUE);
+  nodelay(stdscr, TRUE);
+  keypad(upleftsideof_pond, TRUE);
+  keypad(stdscr, TRUE);
+  nodelay(uprightsideof_pond, TRUE);
+  nodelay(stdscr, TRUE);
+  keypad(uprightsideof_pond, TRUE);
+  keypad(stdscr, TRUE);
+
   noecho();
   cbreak();
   wrefresh(middle_pond);
   wrefresh(leftsideof_pond);
   wrefresh(rightsideof_pond);
+  wrefresh(downleftsideof_pond);
+  wrefresh(downrightsideof_pond);
+  wrefresh(upleftsideof_pond);
+  wrefresh(uprightsideof_pond);
 
   PrintParkWoods();
-  PrintDebugInfo();
   refresh();
   /*clear(); 
     bkgd(COLOR_PAIR(8));
@@ -226,8 +286,6 @@ void PrintPark() {
         napms(delay);
         wave_frame++;
     }*/
-
-  napms(5000);
 }
 
 /*********************************************************************
@@ -305,6 +363,8 @@ REMARKS when using this function:
 
 void PrintParkWoods() {
   mvaddstr(MIDDLE_Y_AXIS+11,MIDDLE_X_AXIS, "^ ^^  ^     ^"); //test
+  ThickTree test;
+  test.Spawn(4,5,5,5,6,5);
 }
 
 /*********************************************************************
