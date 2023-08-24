@@ -71,10 +71,19 @@ class ThickTree : public Woods {
     void Spawn(int up_y, int up_x, 
                         int mid_y, int mid_x,
                         int bottom_y, int bottom_x) 
-    { /*Upper part of the tree*/
+    {
       mvaddstr(up_y, up_x, " /|\\ ");
       mvaddstr(mid_y, mid_x, "//|\\\\ ");
       mvaddstr(bottom_y, bottom_x, "  I  ");
+    }
+
+    void SpawnThick_in_Window(WINDOW *win, int up_y, int up_x, 
+                        int mid_y, int mid_x,
+                        int bottom_y, int bottom_x) 
+    {
+      mvwprintw(win,up_y, up_x, " /|\\ ");
+      mvwprintw(win,mid_y, mid_x, "//|\\\\ ");
+      mvwprintw(win,bottom_y, bottom_x, "  I  ");
     }
 };
 
@@ -86,7 +95,15 @@ class ThinTree : public Woods {
     {
       mvaddstr(up_y, up_x, "  ^  ");
       mvaddstr(mid_y, mid_x, " /|\\ ");
-      mvaddstr(bottom_y, bottom_x, " I ");
+      mvaddstr(bottom_y, bottom_x, "  I ");
+    }
+    void SpawnThin_in_Window(WINDOW *win, int up_y, int up_x, 
+                        int mid_y, int mid_x,
+                        int bottom_y, int bottom_x) 
+    {
+      mvwprintw(win,up_y, up_x, "  ^  ");
+      mvwprintw(win,mid_y, mid_x, " /|\\ ");
+      mvwprintw(win,bottom_y, bottom_x, "  I ");
     }
 };
 /*-------------------------------------------------------------------*/
@@ -99,6 +116,7 @@ WINDOW *Text_window(int height, int width, int starty, int startx);
 WINDOW *create_middle_pond(int height, int width, int starty, int startx);
 WINDOW *cr_leftsideof_pond(int height, int width, int starty, int startx);
 WINDOW *cr_rightsideof_pond(int height, int width, int starty, int startx);
+WINDOW *cr_parktrees(int height, int width, int starty, int startx);
 /*-------------------------------------------------------------------*/
 void PrintPark();
 void PrintParkWoods();
@@ -115,6 +133,7 @@ you can use the password to skip to the point you were last time.
 **********************************************************************/
 
 int main(void)  {
+  /*---------------------------PROGRAM-------------------------------*/
   initscr();
   clear();
   has_colors();
@@ -129,7 +148,7 @@ int main(void)  {
   start_color();
   init_pair(8, COLOR_BLACK, COLOR_GREEN);  /*Forest*/
   init_pair(7, COLOR_WHITE, COLOR_BLUE); /*Water*/
-  init_pair(6, COLOR_RED, COLOR_BLACK); /*Error*/
+  init_pair(6, COLOR_RED, COLOR_GREEN); /*Error*/
   init_pair(9, COLOR_BLACK, COLOR_GREEN); /*for menu title and underline*/
   curs_set(0);
 
@@ -140,7 +159,7 @@ int main(void)  {
   /*-----------------------------------------------------------------*/
   PrintDebugInfo();
   refresh();
-  napms(5000);
+  napms(10000);
   endwin();
   return 0;
 }
@@ -163,6 +182,7 @@ void PrintPark() {
   clear();
   bkgd(COLOR_PAIR(8));
   refresh();
+
   WINDOW *middle_pond;
   WINDOW *leftsideof_pond;
   WINDOW *downleftsideof_pond;
@@ -170,6 +190,7 @@ void PrintPark() {
   WINDOW *downrightsideof_pond;
   WINDOW *upleftsideof_pond;
   WINDOW *uprightsideof_pond;
+
   middle_pond=create_middle_pond(10,10,MIDDLE_Y_AXIS-5,MIDDLE_X_AXIS-4);
   leftsideof_pond=cr_leftsideof_pond(6,5,MIDDLE_Y_AXIS-3,MIDDLE_X_AXIS-9);
   rightsideof_pond=cr_rightsideof_pond(6,5,MIDDLE_Y_AXIS-3,MIDDLE_X_AXIS+6);
@@ -237,55 +258,6 @@ void PrintPark() {
 
   PrintParkWoods();
   refresh();
-  /*clear(); 
-    bkgd(COLOR_PAIR(8));
-    refresh();
-    WINDOW *middle_pond;
-    WINDOW *leftsideof_pond;
-    WINDOW *rightsideof_pond;
-    middle_pond = create_middle_pond(10, 10, MIDDLE_Y_AXIS - 5, MIDDLE_X_AXIS - 4);
-    leftsideof_pond = cr_leftsideof_pond(6, 6, MIDDLE_Y_AXIS - 3, MIDDLE_X_AXIS - 10);
-    rightsideof_pond = cr_rightsideof_pond(6, 5, MIDDLE_Y_AXIS - 3, MIDDLE_X_AXIS + 6);
-
-    nodelay(middle_pond, TRUE);
-    nodelay(stdscr, TRUE);
-    keypad(middle_pond, TRUE);
-    keypad(stdscr, TRUE);
-    nodelay(leftsideof_pond, TRUE);
-    nodelay(stdscr, TRUE);
-    keypad(leftsideof_pond, TRUE);
-    keypad(stdscr, TRUE);
-    nodelay(rightsideof_pond, TRUE);
-    nodelay(stdscr, TRUE);
-    keypad(rightsideof_pond, TRUE);
-    keypad(stdscr, TRUE);
-    noecho();
-    cbreak();
-    
-    int wave_frame = 0;
-    int delay = 100; // Time delay in milliseconds
-
-    while (true) {
-        // Creating the waves for the middle pond
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 3; j++) {
-                mvwprintw(middle_pond, i + 1, j + 3, "%c", waves[(i + wave_frame) % 5][j]);
-            }
-        }
-
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 3; j++) {
-                mvwprintw(middle_pond, i + 4, j + 3, "%c", waves[(i + wave_frame) % 5][j]);
-            }
-        }
-        
-        wrefresh(middle_pond);
-        wrefresh(leftsideof_pond);
-        wrefresh(rightsideof_pond);
-
-        napms(delay);
-        wave_frame++;
-    }*/
 }
 
 /*********************************************************************
@@ -302,9 +274,6 @@ WINDOW *create_middle_pond(int height, int width, int starty, int startx) {
   WINDOW *local_win;
   local_win = newwin(height, width, starty, startx);
   wbkgd(local_win, COLOR_PAIR(7));
-  /*mvwaddch(local_win, height / 1, width / 1, '~');
-  mvwaddch(local_win, height / 2, width / 2, '~');
-  mvwaddch(local_win, height / 3, width / 3, '~');*/
   wrefresh(local_win);
   return local_win;
 }
@@ -323,9 +292,6 @@ WINDOW *cr_rightsideof_pond(int height, int width, int starty, int startx) {
   WINDOW *local_win;
   local_win = newwin(height, width, starty, startx);
   wbkgd(local_win, COLOR_PAIR(7));
-  /*mvwaddch(local_win, height / 1, width / 1, '~');
-  mvwaddch(local_win, height / 2, width / 2, '~');
-  mvwaddch(local_win, height / 3, width / 3, '~');*/
   wrefresh(local_win);
   return local_win;
 }
@@ -344,9 +310,24 @@ WINDOW *cr_leftsideof_pond(int height, int width, int starty, int startx) {
   WINDOW *local_win;
   local_win = newwin(height, width, starty, startx);
   wbkgd(local_win, COLOR_PAIR(7));
-  /*mvwaddch(local_win, height / 1, width / 1, '~');
-  mvwaddch(local_win, height / 2, width / 2, '~');
-  mvwaddch(local_win, height / 3, width / 3, '~');*/
+  wrefresh(local_win);
+  return local_win;
+}
+
+/*********************************************************************
+ NAME: WINDOWFUNCTION 
+ DESCRIPTION: Creates window for printing the trees in the park
+
+Input:
+Output:
+Used global variables:
+REMARKS when using this function:
+*********************************************************************/
+
+WINDOW *cr_parktrees(int height, int width, int starty, int startx) {
+  WINDOW *local_win;
+  local_win = newwin(height, width, starty, startx);
+  wbkgd(local_win, COLOR_PAIR(8));
   wrefresh(local_win);
   return local_win;
 }
@@ -362,9 +343,66 @@ REMARKS when using this function:
 *********************************************************************/
 
 void PrintParkWoods() {
+  /*Printing trees to the upleft corner
+  int y[6] = {1, 4, 8, 12, 16, 19};
+  int x[10] = {15, 23, 3, 9, 30, 35, 42, 19, 34, 15};
+
   mvaddstr(MIDDLE_Y_AXIS+11,MIDDLE_X_AXIS, "^ ^^  ^     ^"); //test
-  ThickTree test;
-  test.Spawn(4,5,5,5,6,5);
+  ThickTree thicktree;
+  ThinTree thintree;
+
+  for (int i=0; i<6; i++) {
+    int newY=y[i]+1;
+    thicktree.Spawn(y[i],x[i],newY,x[i],newY+1,x[i]);
+  }
+
+  for (int i=5; i<10; i++) {
+    int newY=y[i-5]+1;
+    thintree.Spawn(y[i-5],x[i],newY,x[i],newY+1,x[i]);
+  }
+  ------------------------------------*/
+  int y[6] = {1, 4, 8, 12, 16, 19};
+  int x[10] = {15, 23, 3, 9, 30, 35, 42, 19, 34, 15};
+
+  ThickTree thicktree;
+  ThinTree thintree;
+
+  WINDOW *leftsidetrees;
+  WINDOW *abovetrees;
+  WINDOW *rightsidetrees;
+
+  leftsidetrees=cr_parktrees(23,47,1,1);
+  rightsidetrees=cr_parktrees(21,44,1,COLS-45);
+  abovetrees=cr_parktrees(8,25,1,MIDDLE_X_AXIS-12);
+
+  mvaddstr(MIDDLE_Y_AXIS+11,MIDDLE_X_AXIS, "^ ^^  ^     ^");
+
+  wclear(leftsidetrees);
+
+  for (int i=0; i<6; i++) {
+    int newY=y[i]+1;
+    thicktree.SpawnThick_in_Window(leftsidetrees,y[i],x[i],newY,x[i],newY+1,x[i]);
+  }
+
+  for (int i=5; i<10; i++) {
+    int newY=y[i-5]+1;
+    thintree.SpawnThin_in_Window(leftsidetrees,y[i-5],x[i],newY,x[i],newY+1,x[i]);
+  }
+
+  nodelay(leftsidetrees, TRUE);
+  nodelay(stdscr, TRUE);
+  keypad(leftsidetrees, TRUE);
+  keypad(stdscr, TRUE);
+  nodelay(rightsidetrees, TRUE);
+  nodelay(stdscr, TRUE);
+  keypad(rightsidetrees, TRUE);
+  keypad(stdscr, TRUE);
+  nodelay(abovetrees, TRUE);
+  nodelay(stdscr, TRUE);
+  keypad(abovetrees, TRUE);
+  keypad(stdscr, TRUE);
+  wrefresh(leftsidetrees);
+
 }
 
 /*********************************************************************
@@ -380,20 +418,30 @@ REMARKS when using this function:
 
 void PrintDebugInfo() {
   if (LINES<=30) {
+  attron(COLOR_PAIR(6));
   mvaddstr(MIDDLE_Y_AXIS+10,MIDDLE_X_AXIS+45, "Terminal size:");
   mvprintw(MIDDLE_Y_AXIS+11,MIDDLE_X_AXIS+45, "Lines: %d",LINES);
   mvprintw(MIDDLE_Y_AXIS+12,MIDDLE_X_AXIS+45, "Cols: %d",COLS);
+  mvprintw(MIDDLE_Y_AXIS+13,MIDDLE_X_AXIS+45, "mid_y: %d",MIDDLE_Y_AXIS);
+  mvprintw(MIDDLE_Y_AXIS+14,MIDDLE_X_AXIS+45, "mid_x: %d",MIDDLE_X_AXIS);
+  attroff(COLOR_PAIR(6));
   }
   
   else if (LINES>30 && LINES<=50) {
-  mvaddstr(MIDDLE_Y_AXIS+19,MIDDLE_X_AXIS+45, "Terminal size:");
-  mvprintw(MIDDLE_Y_AXIS+20,MIDDLE_X_AXIS+45, "Lines: %d",LINES);
-  mvprintw(MIDDLE_Y_AXIS+21,MIDDLE_X_AXIS+45, "Cols: %d",COLS);
+  attron(COLOR_PAIR(6));
+  mvaddstr(MIDDLE_Y_AXIS+18,MIDDLE_X_AXIS+45, "Terminal size:");
+  mvprintw(MIDDLE_Y_AXIS+19,MIDDLE_X_AXIS+45, "Lines: %d",LINES);
+  mvprintw(MIDDLE_Y_AXIS+20,MIDDLE_X_AXIS+45, "Cols: %d",COLS);
+  mvprintw(MIDDLE_Y_AXIS+21,MIDDLE_X_AXIS+45, "mid_y: %d",MIDDLE_Y_AXIS);
+  mvprintw(MIDDLE_Y_AXIS+22,MIDDLE_X_AXIS+45, "mid_x: %d",MIDDLE_X_AXIS);
+  attroff(COLOR_PAIR(6));
   }
 
   else {
+  attron(COLOR_PAIR(6));
   mvaddstr(1,1, "Terminal size:");
   mvprintw(2,1, "Lines: %d",LINES);
   mvprintw(3,1, "Cols: %d",COLS);
+  attroff(COLOR_PAIR(6));
   }
 }
