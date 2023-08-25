@@ -68,9 +68,9 @@ class Woods {
 
 class ThickTree : public Woods {
   public:
-    void Spawn(int up_y, int up_x, 
-                        int mid_y, int mid_x,
-                        int bottom_y, int bottom_x) 
+    void SpawnThick(int up_y, int up_x, 
+                    int mid_y, int mid_x,
+                    int bottom_y, int bottom_x) 
     {
       mvaddstr(up_y, up_x, " /|\\ ");
       mvaddstr(mid_y, mid_x, "//|\\\\ ");
@@ -78,8 +78,8 @@ class ThickTree : public Woods {
     }
 
     void SpawnThick_in_Window(WINDOW *win, int up_y, int up_x, 
-                        int mid_y, int mid_x,
-                        int bottom_y, int bottom_x) 
+                              int mid_y, int mid_x,
+                              int bottom_y, int bottom_x) 
     {
       mvwprintw(win,up_y, up_x, " /|\\ ");
       mvwprintw(win,mid_y, mid_x, "//|\\\\ ");
@@ -89,23 +89,83 @@ class ThickTree : public Woods {
 
 class ThinTree : public Woods {
   public:
-    void Spawn(int up_y, int up_x, 
-                        int mid_y, int mid_x,
-                        int bottom_y, int bottom_x) 
+    void SpawnThin(int up_y, int up_x, 
+                   int mid_y, int mid_x,
+                   int bottom_y, int bottom_x) 
     {
       mvaddstr(up_y, up_x, "  ^  ");
       mvaddstr(mid_y, mid_x, " /|\\ ");
       mvaddstr(bottom_y, bottom_x, "  I ");
     }
     void SpawnThin_in_Window(WINDOW *win, int up_y, int up_x, 
-                        int mid_y, int mid_x,
-                        int bottom_y, int bottom_x) 
+                            int mid_y, int mid_x,
+                            int bottom_y, int bottom_x) 
     {
       mvwprintw(win,up_y, up_x, "  ^  ");
       mvwprintw(win,mid_y, mid_x, " /|\\ ");
       mvwprintw(win,bottom_y, bottom_x, "  I ");
     }
 };
+class Esker : public Woods {
+  public:
+    void SpawnEsker(int up_y, int up_x, 
+                    int mid_y, int mid_x
+                    /*int bottom_y, int bottom_x*/) 
+    {
+      mvaddstr(up_y, up_x, " _");
+      mvaddstr(mid_y, mid_x, " / \\");
+      //mvaddstr(bottom_y, bottom_x, "  I ");
+    }
+    void SpawnEsker_in_Window(WINDOW *win, int up_y, int up_x, 
+                              int mid_y, int mid_x
+                              /*int bottom_y, int bottom_x*/) 
+    {
+      mvwprintw(win,up_y, up_x, " _");
+      mvwprintw(win,mid_y, mid_x, "/ \\");
+      //mvwprintw(win,bottom_y, bottom_x, "  I ");
+    }
+};
+
+class Cabin {
+  public:
+    void SpawnCabin(int top_y, int top_x,
+                    int upmid_y, int upmid_x,
+                    int mid_y, int mid_x,
+                    int lowmid_y, int lowmid_x,
+                    int bot_y, int bot_x) 
+    {
+        // Top of the cabin
+        mvaddstr(top_y, top_x, " _| ");
+        mvaddstr(upmid_y, upmid_x, "/  \\");
+        
+        // Middle of the cabin with door and window
+        mvaddstr(mid_y, mid_x, "|__|");
+        mvaddstr(lowmid_y, lowmid_x, "|_||");
+        
+        // Bottom of the cabin
+        mvaddstr(bot_y, bot_x, "----");
+
+        // Chimney
+        //mvaddstr(top_y - 1, top_x + 1, "||");
+        //mvaddstr(top_y - 2, top_x + 1, "||");
+    }
+
+    void SpawnCabin_in_Window(WINDOW *win, int top_y, int top_x,
+                              int upmid_y, int upmid_x,
+                              int mid_y, int mid_x,
+                              int lowmid_y, int lowmid_x,
+                              int bot_y, int bot_x) 
+    {
+        mvwprintw(win, top_y, top_x, " /\\ ");
+        mvwprintw(win, upmid_y, upmid_x, "/  \\");
+        mvwprintw(win, mid_y, mid_x, "|__|");
+        mvwprintw(win, lowmid_y, lowmid_x, "|||");
+        mvwprintw(win, bot_y, bot_x, "###");
+        mvwprintw(win, top_y - 1, top_x + 1, "||");
+        mvwprintw(win, top_y - 2, top_x + 1, "||");
+    }
+};
+
 /*-------------------------------------------------------------------*/
 
 /*-------------------------------------------------------------------*
@@ -118,10 +178,16 @@ WINDOW *cr_leftsideof_pond(int height, int width, int starty, int startx);
 WINDOW *cr_rightsideof_pond(int height, int width, int starty, int startx);
 WINDOW *cr_parktrees(int height, int width, int starty, int startx);
 /*-------------------------------------------------------------------*/
+/*National park functions*/
 void PrintPark();
 void PrintParkWoods();
+/*void PrintParkCabin();*/
+/*-----------------------*/
+
 void PrintStation();
+
 void PrintDebugInfo();
+void ShowCompass();
 
 /*There could be a function which is always used when the game want's
 save progress. The game creates, if one does not exist, a file and
@@ -190,6 +256,7 @@ void PrintPark() {
   WINDOW *downrightsideof_pond;
   WINDOW *upleftsideof_pond;
   WINDOW *uprightsideof_pond;
+  Cabin cabin;
 
   middle_pond=create_middle_pond(10,10,MIDDLE_Y_AXIS-5,MIDDLE_X_AXIS-4);
   leftsideof_pond=cr_leftsideof_pond(6,5,MIDDLE_Y_AXIS-3,MIDDLE_X_AXIS-9);
@@ -215,6 +282,8 @@ void PrintPark() {
   }
   /*--------------------------------------*/
 
+  cabin.SpawnCabin(23, 85, 24, 85, 25, 85, 26, 85, 27, 85);
+
   nodelay(middle_pond, TRUE);
   nodelay(stdscr, TRUE);
   keypad(middle_pond, TRUE);
@@ -227,7 +296,6 @@ void PrintPark() {
   nodelay(stdscr, TRUE);
   keypad(rightsideof_pond, TRUE);
   keypad(stdscr, TRUE);
-  /*--------------------------------*/
   nodelay(downleftsideof_pond, TRUE);
   nodelay(stdscr, TRUE);
   keypad(downleftsideof_pond, TRUE);
@@ -236,7 +304,6 @@ void PrintPark() {
   nodelay(stdscr, TRUE);
   keypad(downrightsideof_pond, TRUE);
   keypad(stdscr, TRUE);
-  /*-------------------------------*/
   nodelay(upleftsideof_pond, TRUE);
   nodelay(stdscr, TRUE);
   keypad(upleftsideof_pond, TRUE);
@@ -245,7 +312,6 @@ void PrintPark() {
   nodelay(stdscr, TRUE);
   keypad(uprightsideof_pond, TRUE);
   keypad(stdscr, TRUE);
-
   noecho();
   cbreak();
   wrefresh(middle_pond);
@@ -333,6 +399,24 @@ WINDOW *cr_parktrees(int height, int width, int starty, int startx) {
 }
 
 /*********************************************************************
+ NAME: WINDOWFUNCTION 
+ DESCRIPTION: Creates window for printing the eskers above the pond
+
+Input:
+Output:
+Used global variables:
+REMARKS when using this function:
+*********************************************************************/
+
+WINDOW *cr_eskers(int height, int width, int starty, int startx) {
+  WINDOW *local_win;
+  local_win = newwin(height, width, starty, startx);
+  wbkgd(local_win, COLOR_PAIR(8));
+  wrefresh(local_win);
+  return local_win;
+}
+
+/*********************************************************************
  NAME: PrintParkWoods 
  DESCRIPTION: Prints the trees, paths, rocks etc in the national park
 
@@ -343,42 +427,28 @@ REMARKS when using this function:
 *********************************************************************/
 
 void PrintParkWoods() {
-  /*Printing trees to the upleft corner
+  /*Coordinates where the trees are spawned in the windows*/
   int y[6] = {1, 4, 8, 12, 16, 19};
   int x[10] = {15, 23, 3, 9, 30, 35, 42, 19, 34, 15};
-
-  mvaddstr(MIDDLE_Y_AXIS+11,MIDDLE_X_AXIS, "^ ^^  ^     ^"); //test
-  ThickTree thicktree;
-  ThinTree thintree;
-
-  for (int i=0; i<6; i++) {
-    int newY=y[i]+1;
-    thicktree.Spawn(y[i],x[i],newY,x[i],newY+1,x[i]);
-  }
-
-  for (int i=5; i<10; i++) {
-    int newY=y[i-5]+1;
-    thintree.Spawn(y[i-5],x[i],newY,x[i],newY+1,x[i]);
-  }
-  ------------------------------------*/
-  int y[6] = {1, 4, 8, 12, 16, 19};
-  int x[10] = {15, 23, 3, 9, 30, 35, 42, 19, 34, 15};
+  /*Coordinates where the esker is spawned in the window*/
+  int ex[7] = {1, 4, 7, 10, 14, 18, 22};
+  int ey[7] = {1, 2, 3, 2, 1, 2, 3};
 
   ThickTree thicktree;
   ThinTree thintree;
+  Esker esker;
 
   WINDOW *leftsidetrees;
-  WINDOW *abovetrees;
+  WINDOW *above_esker;
   WINDOW *rightsidetrees;
 
   leftsidetrees=cr_parktrees(23,47,1,1);
-  rightsidetrees=cr_parktrees(21,44,1,COLS-45);
-  abovetrees=cr_parktrees(8,25,1,MIDDLE_X_AXIS-12);
+  rightsidetrees=cr_parktrees(23,46,1,COLS-45);
+  above_esker=cr_eskers(8,26,1,MIDDLE_X_AXIS-12);
 
-  mvaddstr(MIDDLE_Y_AXIS+11,MIDDLE_X_AXIS, "^ ^^  ^     ^");
+  mvaddstr(MIDDLE_Y_AXIS+10,MIDDLE_X_AXIS, "^ ^^  ^     ^");
 
-  wclear(leftsidetrees);
-
+  /*Printing the trees to the left*/
   for (int i=0; i<6; i++) {
     int newY=y[i]+1;
     thicktree.SpawnThick_in_Window(leftsidetrees,y[i],x[i],newY,x[i],newY+1,x[i]);
@@ -389,6 +459,23 @@ void PrintParkWoods() {
     thintree.SpawnThin_in_Window(leftsidetrees,y[i-5],x[i],newY,x[i],newY+1,x[i]);
   }
 
+  /*Printing the trees to the right*/
+  for (int i=0; i<6; i++) {
+    int newY=y[i]+1;
+    thicktree.SpawnThick_in_Window(rightsidetrees,y[i],x[i],newY,x[i],newY+1,x[i]);
+  }
+
+  for (int i=5; i<10; i++) {
+    int newY=y[i-5]+1;
+    thintree.SpawnThin_in_Window(rightsidetrees,y[i-5],x[i],newY,x[i],newY+1,x[i]);
+  }
+  
+  /*Printing the esker above the pond*/
+  for (int i=0; i<7; i++) {
+    int newY=ey[i]+1;
+    esker.SpawnEsker_in_Window(above_esker,ey[i],ex[i],newY,ex[i]);
+  }
+
   nodelay(leftsidetrees, TRUE);
   nodelay(stdscr, TRUE);
   keypad(leftsidetrees, TRUE);
@@ -397,11 +484,13 @@ void PrintParkWoods() {
   nodelay(stdscr, TRUE);
   keypad(rightsidetrees, TRUE);
   keypad(stdscr, TRUE);
-  nodelay(abovetrees, TRUE);
+  nodelay(above_esker, TRUE);
   nodelay(stdscr, TRUE);
-  keypad(abovetrees, TRUE);
+  keypad(above_esker, TRUE);
   keypad(stdscr, TRUE);
   wrefresh(leftsidetrees);
+  wrefresh(rightsidetrees);
+  wrefresh(above_esker);
 
 }
 
@@ -442,6 +531,8 @@ void PrintDebugInfo() {
   mvaddstr(1,1, "Terminal size:");
   mvprintw(2,1, "Lines: %d",LINES);
   mvprintw(3,1, "Cols: %d",COLS);
+  mvprintw(4,1, "mid_y: %d",MIDDLE_Y_AXIS);
+  mvprintw(5,1, "mid_x: %d",MIDDLE_X_AXIS);
   attroff(COLOR_PAIR(6));
   }
 }
