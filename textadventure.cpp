@@ -30,10 +30,29 @@
 
 **********************************************************************/
 
+/*********************************************************************
+                        Other comments  
+------------------------------                                          
+Minimum window size should be:
+Lines(y):30
+Cols(x):114               
+------------------------------
+---------------------------------------------------------------------
+There could be a function which is always used when the game want's
+save progress. The game creates, if one does not exist, a file and
+write down the code there, so if you want to quit and continue later
+you can use the password to skip to the point you were last time.
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+Everything graphical in the game is purely aesthetic, the player moves
+and the game itself is played in a "hidden" x,y grid.
+                                                                     */
+
 /*-------------------------------------------------------------------*
 *    HEADER FILES                                                    *
 *--------------------------------------------------------------------*/
 #include <iostream>
+#include <string>
 #include <ncurses.h>
 #include <curses.h>
 #include <unistd.h>
@@ -98,8 +117,8 @@ class ThinTree : public Woods {
       mvaddstr(bottom_y, bottom_x, "  I ");
     }
     void SpawnThin_in_Window(WINDOW *win, int up_y, int up_x, 
-                            int mid_y, int mid_x,
-                            int bottom_y, int bottom_x) 
+                              int mid_y, int mid_x,
+                              int bottom_y, int bottom_x) 
     {
       mvwprintw(win,up_y, up_x, "  ^  ");
       mvwprintw(win,mid_y, mid_x, " /|\\ ");
@@ -109,20 +128,16 @@ class ThinTree : public Woods {
 class Esker : public Woods {
   public:
     void SpawnEsker(int up_y, int up_x, 
-                    int mid_y, int mid_x
-                    /*int bottom_y, int bottom_x*/) 
+                    int mid_y, int mid_x) 
     {
       mvaddstr(up_y, up_x, " _");
       mvaddstr(mid_y, mid_x, " / \\");
-      //mvaddstr(bottom_y, bottom_x, "  I ");
     }
     void SpawnEsker_in_Window(WINDOW *win, int up_y, int up_x, 
-                              int mid_y, int mid_x
-                              /*int bottom_y, int bottom_x*/) 
+                              int mid_y, int mid_x) 
     {
       mvwprintw(win,up_y, up_x, " _");
       mvwprintw(win,mid_y, mid_x, "/ \\");
-      //mvwprintw(win,bottom_y, bottom_x, "  I ");
     }
 };
 
@@ -134,20 +149,12 @@ class Cabin {
                     int lowmid_y, int lowmid_x,
                     int bot_y, int bot_x) 
     {
-        // Top of the cabin
         mvaddstr(top_y, top_x, " _| ");
         mvaddstr(upmid_y, upmid_x, "/  \\");
-        
-        // Middle of the cabin with door and window
         mvaddstr(mid_y, mid_x, "|__|");
         mvaddstr(lowmid_y, lowmid_x, "|_||");
-        
-        // Bottom of the cabin
         mvaddstr(bot_y, bot_x, "----");
 
-        // Chimney
-        //mvaddstr(top_y - 1, top_x + 1, "||");
-        //mvaddstr(top_y - 2, top_x + 1, "||");
     }
 
     void SpawnCabin_in_Window(WINDOW *win, int top_y, int top_x,
@@ -165,6 +172,43 @@ class Cabin {
         mvwprintw(win, top_y - 2, top_x + 1, "||");
     }
 };
+/*--------------------------------------------------------------------*/
+
+class Player {
+  public:
+    int position_x;
+    int position_y;
+
+    Player(int startX, int startY) : position_x(startX), position_y(startY) {}
+
+    void moveRight() {
+
+    }
+
+    void moveLeft() {
+
+    }
+
+    void moveForward() {
+
+    }
+
+    void moveBack() {
+
+    }
+};
+
+class Map {  
+  public:
+    int gridsize_y;
+    int gridsize_x;
+    int playerpos_y;
+    int playerpos_x;
+
+    Map(int grid_y, int grid_x, int player_map_pos_y, int player_map_pos_x)
+    : gridsize_y(grid_y), gridsize_x(grid_x), playerpos_y(player_map_pos_y),
+      playerpos_x(player_map_pos_x) {}
+};
 
 /*-------------------------------------------------------------------*/
 
@@ -177,38 +221,43 @@ WINDOW *create_middle_pond(int height, int width, int starty, int startx);
 WINDOW *cr_leftsideof_pond(int height, int width, int starty, int startx);
 WINDOW *cr_rightsideof_pond(int height, int width, int starty, int startx);
 WINDOW *cr_parktrees(int height, int width, int starty, int startx);
+WINDOW *cr_eskers(int height, int width, int starty, int startx);
 /*-------------------------------------------------------------------*/
 /*National park functions*/
 void PrintPark();
 void PrintParkWoods();
-/*void PrintParkCabin();*/
 /*-----------------------*/
-
-void PrintStation();
-
+/*-Game logics functions-*/
+std::string Userinput();
+void DialogueBox();
+/*-----------------------*/
 void PrintDebugInfo();
-void ShowCompass();
-
-/*There could be a function which is always used when the game want's
-save progress. The game creates, if one does not exist, a file and
-write down the code there, so if you want to quit and continue later
-you can use the password to skip to the point you were last time.
 
 /*********************************************************************
 *    MAIN PROGRAM                                                      *
 **********************************************************************/
 
 int main(void)  {
-  /*---------------------------PROGRAM-------------------------------*/
+/*---------------------------Error Checks-----------------------------*/
   initscr();
   clear();
   has_colors();
 
-   if (has_colors() == FALSE) {
+  if (has_colors()==FALSE) {
     endwin();
     std::cout<<"Your terminal does not support color"<<std::endl;
     napms(3000);
     exit(1);
+  }
+
+  if ((LINES<30 || COLS<114) || (LINES<30 && COLS<114)) {
+    endwin();
+    std::cout<<"Your terminal is too small, expand it!"<<std::endl;
+    /*attron(COLOR_PAIR(6));
+    mvaddstr(MIDDLE_Y_AXIS,MIDDLE_X_AXIS-5, "Your terminal is too small");
+    attroff(COLOR_PAIR(6));*/
+    napms(3500);
+    return 0;
   }
 
   start_color();
@@ -217,15 +266,14 @@ int main(void)  {
   init_pair(6, COLOR_RED, COLOR_GREEN); /*Error*/
   init_pair(9, COLOR_BLACK, COLOR_GREEN); /*for menu title and underline*/
   curs_set(0);
+/*------------------------------------------------------------------*/
 
-  /*std::cout<<"Middle Y = "<<MIDDLE_Y_AXIS<<std::endl;
-  std::cout<<"Middle X = "<<MIDDLE_X_AXIS<<std::endl;*/
-
+/*-----------------------------PROGRAM------------------------------*/
   PrintPark();
-  /*-----------------------------------------------------------------*/
-  PrintDebugInfo();
+  PrintDebugInfo(); //temp
   refresh();
   napms(10000);
+/*------------------------------------------------------------------*/
   endwin();
   return 0;
 }
@@ -233,6 +281,125 @@ int main(void)  {
 /*********************************************************************
 *    FUNCTIONS                                                       *
 **********************************************************************/
+
+/*********************************************************************
+ NAME: WINDOWFUNCTION
+ DESCRIPTION: Prints the middle of the pond in national park
+
+Input:
+Output:
+Used global variables:
+REMARKS when using this function:
+*********************************************************************/
+
+WINDOW *create_middle_pond(int height, int width, int starty, int startx) {
+  WINDOW *local_win;
+  local_win = newwin(height, width, starty, startx);
+  wbkgd(local_win, COLOR_PAIR(7));
+  wrefresh(local_win);
+  return local_win;
+}
+
+/*********************************************************************
+ NAME: WINDOWFUNCTION
+ DESCRIPTION: Prints the right side of the pond in national park
+
+Input:
+Output:
+Used global variables:
+REMARKS when using this function:
+*********************************************************************/
+
+WINDOW *cr_rightsideof_pond(int height, int width, int starty, int startx) {
+  WINDOW *local_win;
+  local_win = newwin(height, width, starty, startx);
+  wbkgd(local_win, COLOR_PAIR(7));
+  wrefresh(local_win);
+  return local_win;
+}
+
+/*********************************************************************
+ NAME: WINDOWFUNCTION 
+ DESCRIPTION: Prints the left side of the pond in national park
+
+Input:
+Output:
+Used global variables:
+REMARKS when using this function:
+*********************************************************************/
+
+WINDOW *cr_leftsideof_pond(int height, int width, int starty, int startx) {
+  WINDOW *local_win;
+  local_win = newwin(height, width, starty, startx);
+  wbkgd(local_win, COLOR_PAIR(7));
+  wrefresh(local_win);
+  return local_win;
+}
+
+/*********************************************************************
+ NAME: WINDOWFUNCTION 
+ DESCRIPTION: Creates window for printing the trees in the park
+
+Input:
+Output:
+Used global variables:
+REMARKS when using this function:
+*********************************************************************/
+
+WINDOW *cr_parktrees(int height, int width, int starty, int startx) {
+  WINDOW *local_win;
+  local_win = newwin(height, width, starty, startx);
+  wbkgd(local_win, COLOR_PAIR(8));
+  wrefresh(local_win);
+  return local_win;
+}
+
+/*********************************************************************
+ NAME: WINDOWFUNCTION 
+ DESCRIPTION: Creates window for printing the eskers above the pond
+
+Input:
+Output:
+Used global variables:
+REMARKS when using this function:
+*********************************************************************/
+
+WINDOW *cr_eskers(int height, int width, int starty, int startx) {
+  WINDOW *local_win;
+  local_win = newwin(height, width, starty, startx);
+  wbkgd(local_win, COLOR_PAIR(8));
+  wrefresh(local_win);
+  return local_win;
+}
+
+/*********************************************************************
+ NAME: Userinput
+ DESCRIPTION: gets the user input and returns the string
+
+Input:
+Output:
+Used global variables:
+REMARKS when using this function:
+*********************************************************************/
+
+std::string Userinput() {
+  return "Temp";
+}
+
+/*********************************************************************
+ NAME: DialogueBox
+ DESCRIPTION: Has all the game related output, like see all the conver-
+ sations and other game related text
+
+Input:
+Output:
+Used global variables:
+REMARKS when using this function:
+*********************************************************************/
+
+void DialogueBox() {
+
+}
 
 /*********************************************************************
  NAME: PrintPark
@@ -327,96 +494,6 @@ void PrintPark() {
 }
 
 /*********************************************************************
- NAME: WINDOWFUNCTION
- DESCRIPTION: Prints the middle of the pond in national park
-
-Input:
-Output:
-Used global variables:
-REMARKS when using this function:
-*********************************************************************/
-
-WINDOW *create_middle_pond(int height, int width, int starty, int startx) {
-  WINDOW *local_win;
-  local_win = newwin(height, width, starty, startx);
-  wbkgd(local_win, COLOR_PAIR(7));
-  wrefresh(local_win);
-  return local_win;
-}
-
-/*********************************************************************
- NAME: WINDOWFUNCTION
- DESCRIPTION: Prints the right side of the pond in national park
-
-Input:
-Output:
-Used global variables:
-REMARKS when using this function:
-*********************************************************************/
-
-WINDOW *cr_rightsideof_pond(int height, int width, int starty, int startx) {
-  WINDOW *local_win;
-  local_win = newwin(height, width, starty, startx);
-  wbkgd(local_win, COLOR_PAIR(7));
-  wrefresh(local_win);
-  return local_win;
-}
-
-/*********************************************************************
- NAME: WINDOWFUNCTION 
- DESCRIPTION: Prints the left side of the pond in national park
-
-Input:
-Output:
-Used global variables:
-REMARKS when using this function:
-*********************************************************************/
-
-WINDOW *cr_leftsideof_pond(int height, int width, int starty, int startx) {
-  WINDOW *local_win;
-  local_win = newwin(height, width, starty, startx);
-  wbkgd(local_win, COLOR_PAIR(7));
-  wrefresh(local_win);
-  return local_win;
-}
-
-/*********************************************************************
- NAME: WINDOWFUNCTION 
- DESCRIPTION: Creates window for printing the trees in the park
-
-Input:
-Output:
-Used global variables:
-REMARKS when using this function:
-*********************************************************************/
-
-WINDOW *cr_parktrees(int height, int width, int starty, int startx) {
-  WINDOW *local_win;
-  local_win = newwin(height, width, starty, startx);
-  wbkgd(local_win, COLOR_PAIR(8));
-  wrefresh(local_win);
-  return local_win;
-}
-
-/*********************************************************************
- NAME: WINDOWFUNCTION 
- DESCRIPTION: Creates window for printing the eskers above the pond
-
-Input:
-Output:
-Used global variables:
-REMARKS when using this function:
-*********************************************************************/
-
-WINDOW *cr_eskers(int height, int width, int starty, int startx) {
-  WINDOW *local_win;
-  local_win = newwin(height, width, starty, startx);
-  wbkgd(local_win, COLOR_PAIR(8));
-  wrefresh(local_win);
-  return local_win;
-}
-
-/*********************************************************************
  NAME: PrintParkWoods 
  DESCRIPTION: Prints the trees, paths, rocks etc in the national park
 
@@ -508,31 +585,31 @@ REMARKS when using this function:
 void PrintDebugInfo() {
   if (LINES<=30) {
   attron(COLOR_PAIR(6));
-  mvaddstr(MIDDLE_Y_AXIS+10,MIDDLE_X_AXIS+45, "Terminal size:");
-  mvprintw(MIDDLE_Y_AXIS+11,MIDDLE_X_AXIS+45, "Lines: %d",LINES);
-  mvprintw(MIDDLE_Y_AXIS+12,MIDDLE_X_AXIS+45, "Cols: %d",COLS);
-  mvprintw(MIDDLE_Y_AXIS+13,MIDDLE_X_AXIS+45, "mid_y: %d",MIDDLE_Y_AXIS);
-  mvprintw(MIDDLE_Y_AXIS+14,MIDDLE_X_AXIS+45, "mid_x: %d",MIDDLE_X_AXIS);
+  mvaddstr(MIDDLE_Y_AXIS+6,MIDDLE_X_AXIS-35, "Terminal size:");
+  mvprintw(MIDDLE_Y_AXIS+7,MIDDLE_X_AXIS-35, "Lines: %d",LINES);
+  mvprintw(MIDDLE_Y_AXIS+8,MIDDLE_X_AXIS-35, "Cols: %d",COLS);
+  mvprintw(MIDDLE_Y_AXIS+9,MIDDLE_X_AXIS-35, "mid_y: %d",MIDDLE_Y_AXIS);
+  mvprintw(MIDDLE_Y_AXIS+10,MIDDLE_X_AXIS-35, "mid_x: %d",MIDDLE_X_AXIS);
   attroff(COLOR_PAIR(6));
   }
   
   else if (LINES>30 && LINES<=50) {
   attron(COLOR_PAIR(6));
-  mvaddstr(MIDDLE_Y_AXIS+18,MIDDLE_X_AXIS+45, "Terminal size:");
-  mvprintw(MIDDLE_Y_AXIS+19,MIDDLE_X_AXIS+45, "Lines: %d",LINES);
-  mvprintw(MIDDLE_Y_AXIS+20,MIDDLE_X_AXIS+45, "Cols: %d",COLS);
-  mvprintw(MIDDLE_Y_AXIS+21,MIDDLE_X_AXIS+45, "mid_y: %d",MIDDLE_Y_AXIS);
-  mvprintw(MIDDLE_Y_AXIS+22,MIDDLE_X_AXIS+45, "mid_x: %d",MIDDLE_X_AXIS);
+  mvaddstr(MIDDLE_Y_AXIS+11,MIDDLE_X_AXIS-35, "Terminal size:");
+  mvprintw(MIDDLE_Y_AXIS+12,MIDDLE_X_AXIS-35, "Lines: %d",LINES);
+  mvprintw(MIDDLE_Y_AXIS+13,MIDDLE_X_AXIS-35, "Cols: %d",COLS);
+  mvprintw(MIDDLE_Y_AXIS+14,MIDDLE_X_AXIS-35, "mid_y: %d",MIDDLE_Y_AXIS);
+  mvprintw(MIDDLE_Y_AXIS+15,MIDDLE_X_AXIS-35, "mid_x: %d",MIDDLE_X_AXIS);
   attroff(COLOR_PAIR(6));
   }
 
   else {
   attron(COLOR_PAIR(6));
-  mvaddstr(1,1, "Terminal size:");
-  mvprintw(2,1, "Lines: %d",LINES);
-  mvprintw(3,1, "Cols: %d",COLS);
-  mvprintw(4,1, "mid_y: %d",MIDDLE_Y_AXIS);
-  mvprintw(5,1, "mid_x: %d",MIDDLE_X_AXIS);
+  mvaddstr(40,1, "Terminal size:");
+  mvprintw(41,1, "Lines: %d",LINES);
+  mvprintw(42,1, "Cols: %d",COLS);
+  mvprintw(43,1, "mid_y: %d",MIDDLE_Y_AXIS);
+  mvprintw(44,1, "mid_x: %d",MIDDLE_X_AXIS);
   attroff(COLOR_PAIR(6));
   }
 }
