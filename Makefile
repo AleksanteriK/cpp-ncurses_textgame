@@ -1,24 +1,23 @@
-CXX = g++
-CXXFLAGS = -std=c++11
-LDFLAGS = -lncurses
+CC=g++
+CFLAGS=-std=c++11
+LDFLAGS=-lncurses
 
-textadventure: main.o player.o environment.o windows.o gamefunctions.o
-	$(CXX) $(CXXFLAGS) -o textadventure main.o player.o environment.o windows.o gamefunctions.o $(LDFLAGS)
+SOURCES=main.cpp player.cpp environment.cpp windows.cpp gamefunctions.cpp
+HEADERS=player.h environment.h windows.h gamefunctions.h
+OBJECTS=$(SOURCES:.cpp=.o)
+EXECUTABLE=textadventure
 
-main.o: main.cpp
-	$(CXX) $(CXXFLAGS) -c main.cpp
+all: $(SOURCES) $(EXECUTABLE)
 
-player.o: player.cpp player.h
-	$(CXX) $(CXXFLAGS) -c player.cpp
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(OBJECTS) $(LDFLAGS)
 
-environment.o: environment.cpp environment.h
-	$(CXX) $(CXXFLAGS) -c environment.cpp
+.cpp.o:
+	$(CC) $(CFLAGS) -c $< -o $@
 
-windows.o: windows.cpp windows.h
-	$(CXX) $(CXXFLAGS) -c windows.cpp
-
-gamefunctions.o: gamefunctions.cpp gamefunctions.h
-	$(CXX) $(CXXFLAGS) -c gamefunctions.cpp
-
+.PHONY: clean
 clean:
-	rm -f *.o textadventure
+	rm -f $(EXECUTABLE) $(OBJECTS)
+
+windows: $(SOURCES) $(HEADERS)
+	g++ -m64 -o textadventure.exe $(SOURCES) -lncurses
