@@ -568,7 +568,6 @@ void PrintParkWoods() {
   wrefresh(leftsidetrees);
   wrefresh(rightsidetrees);
   wrefresh(above_esker);
-
 }
 
 /*********************************************************************
