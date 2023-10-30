@@ -1,5 +1,7 @@
 #include "environment.h"
-#include "windows.h"
+#include "gamewindows.h"
+#include <curses.h>
+#include <unistd.h>
 
 #define MIDDLE_Y_AXIS (LINES/2)
 #define MIDDLE_X_AXIS (COLS/2)
@@ -66,15 +68,15 @@ void PrintPark() {
   WINDOW *uprightsideof_pond;
   Cabin cabin;
 
-  /*middle_pond=create_middle_pond(10,10,MIDDLE_Y_AXIS-5,MIDDLE_X_AXIS-4);
+  middle_pond=create_middle_pond(10,10,MIDDLE_Y_AXIS-5,MIDDLE_X_AXIS-4);
   leftsideof_pond=cr_leftsideof_pond(6,5,MIDDLE_Y_AXIS-3,MIDDLE_X_AXIS-9);
   rightsideof_pond=cr_rightsideof_pond(6,5,MIDDLE_Y_AXIS-3,MIDDLE_X_AXIS+6);
   downrightsideof_pond=cr_rightsideof_pond(1,3,MIDDLE_Y_AXIS+3,MIDDLE_X_AXIS+6);
   downleftsideof_pond=cr_leftsideof_pond(1,3,MIDDLE_Y_AXIS+3,MIDDLE_X_AXIS-7);
   upleftsideof_pond=cr_leftsideof_pond(1,3,MIDDLE_Y_AXIS-4,MIDDLE_X_AXIS-7);
-  uprightsideof_pond=cr_rightsideof_pond(1,3,MIDDLE_Y_AXIS-4,MIDDLE_X_AXIS+6);*/
+  uprightsideof_pond=cr_rightsideof_pond(1,3,MIDDLE_Y_AXIS-4,MIDDLE_X_AXIS+6);
 
-  /*Creating the waves for the whole pond
+  /*Creating the waves for the whole pond*/
   for (int i=0; i<5; i++) {
     for (int j=0; j<3; j++) {
       mvwprintw(middle_pond, i+1, j+3, "%c", waves[i][j]);
@@ -82,24 +84,25 @@ void PrintPark() {
       mvwprintw(rightsideof_pond, i+1, j+1, "%c", waves[i][j]);
     }
   }
-  /*Printing for the bottom of the middle pond
+  /*Printing for the bottom of the middle pond*/
   for (int i=0; i<5; i++) {
     for (int j=0; j<3; j++) {
       mvwprintw(middle_pond, i+4, j+3, "%c", waves[i][j]);
     }
   }
-  /*--------------------------------------
+  /*--------------------------------------*/
 
-  cabin.SpawnCabin(23, 85, 24, 85, 25, 85, 26, 85, 27, 85);*/
+  /*-----------------------THESE DOESN'T WORK------------------------*/
+  /*cabin.SpawnCabin(23, 85, 24, 85, 25, 85, 26, 85, 27, 85);*/
 
-  const int window_cols = getmaxx(stdscr); // Get the number of columns in the current window
+  /*const int window_cols = getmaxx(stdscr); // Get the number of columns in the current window
   const int window_lines = getmaxy(stdscr); // Get the number of lines in the current window
 
-    /*Scaling factor calculations to adapt to the window size*/
+    /*Scaling factor calculations to adapt to the window size*
   const float scaleX = window_cols / 114.0; // Adjust based on the original window size of 114 columns
   const float scaleY = window_lines / 30.0; // Adjust based on the original window size of 30 lines
 
-    /*Using scaling factors for positioning elements*/
+    /*Using scaling factors for positioning elements*
   middle_pond = create_middle_pond(10 * scaleY, 10 * scaleX, MIDDLE_Y_AXIS - 5 * scaleY, MIDDLE_X_AXIS - 4 * scaleX);
 
     for (int i=0; i<5; i++) {
@@ -116,7 +119,8 @@ void PrintPark() {
         }
     }
 
-    cabin.SpawnCabin(23*scaleY, 85*scaleX, 24*scaleY, 85*scaleX, 25*scaleY, 85*scaleX, 26*scaleY, 85*scaleX, 27*scaleY, 85*scaleX);
+    cabin.SpawnCabin(23*scaleY, 85*scaleX, 24*scaleY, 85*scaleX, 25*scaleY, 85*scaleX, 26*scaleY, 85*scaleX, 27*scaleY, 85*scaleX);*/
+    /*---------------------------------------------------------------*/
 
   nodelay(middle_pond, TRUE);
   nodelay(stdscr, TRUE);
@@ -218,12 +222,12 @@ void PrintParkWoods() {
   WINDOW *above_esker;
   WINDOW *rightsidetrees;
 
-  const int window_cols = getmaxx(stdscr);
-  const int window_lines = getmaxy(stdscr);
+  const int window_cols = COLS;
+  const int window_lines = LINES;
 
     /*Scaling factor calculations to adapt to the window size*/
-  const float scaleX = window_cols / 114.0; /*Adjusting based on the original window size of 114 columns*/
-  const float scaleY = window_lines / 30.0; /*Adjusting based on the original window size of 30 lines*/
+  const float scaleX = window_cols / 125.0; /*Adjusting based on the original window size of 125 columns*/
+  const float scaleY = window_lines / 45.0; /*Adjusting based on the original window size of 45 lines*/
 
   leftsidetrees=cr_parktrees(23*scaleY, 47*scaleX, 1*scaleY, 1*scaleX);
   rightsidetrees=cr_parktrees(23*scaleY, 46*scaleX, 1*scaleY, window_cols - 45*scaleX);
