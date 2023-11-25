@@ -3,9 +3,6 @@
 
 #include <ncurses.h>
 
-/*const char waves[5][3]={ 
-    /*Static waves for pond*/
-
 class Woods {
   public:
     int x_livingarea;
@@ -84,6 +81,5 @@ void PrintPark();
 
 /*Major function for displaying the national park*/
 void PrintParkWoods();
-
 
 #endif

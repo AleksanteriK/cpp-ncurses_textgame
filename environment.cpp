@@ -2,6 +2,7 @@
 #include "gamewindows.h"
 #include <curses.h>
 #include <unistd.h>
+#include <cmath>
 
 #define MIDDLE_Y_AXIS (LINES/2)
 #define MIDDLE_X_AXIS (COLS/2)
@@ -15,41 +16,41 @@ const char waves[5][3]={ /*Static waves for pond*/
 };
 
 void SpawnThick(int up_y, int up_x, int mid_y, int mid_x, int bottom_y, int bottom_x) {
-    /*Drawing a thick tree at specified positions*/
+    /*Draws a thick tree at specified positions*/
     mvaddstr(up_y, up_x, " /|\\ ");
     mvaddstr(mid_y, mid_x, "//|\\\\ ");
     mvaddstr(bottom_y, bottom_x, "  I  ");
 }
 
 void SpawnThick_in_Window(WINDOW *win, int up_y, int up_x, int mid_y, int mid_x, int bottom_y, int bottom_x) {
-    /*Drawing a thick tree in a window at specified positions*/
+    /*Draws a thick tree in a window at specified positions*/
     mvwprintw(win, up_y, up_x, " /|\\ ");
     mvwprintw(win, mid_y, mid_x, "//|\\\\ ");
     mvwprintw(win, bottom_y, bottom_x, "  I  ");
 }
 
 void SpawnThin(int up_y, int up_x, int mid_y, int mid_x, int bottom_y, int bottom_x) {
-    /*Drawing a thin tree at specified positions*/
+    /*Draws a thin tree at specified positions*/
     mvaddstr(up_y, up_x, "  ^  ");
     mvaddstr(mid_y, mid_x, " /|\\ ");
     mvaddstr(bottom_y, bottom_x, "  I ");
 }
 
 void SpawnThin_in_Window(WINDOW *win, int up_y, int up_x, int mid_y, int mid_x, int bottom_y, int bottom_x) {
-    /*Drawing a thin tree in a window at specified positions*/
+    /*Draws a thin tree in a window at specified positions*/
     mvwprintw(win, up_y, up_x, "  ^  ");
     mvwprintw(win, mid_y, mid_x, " /|\\ ");
     mvwprintw(win, bottom_y, bottom_x, "  I ");
 }
 
 void SpawnEsker(int up_y, int up_x, int mid_y, int mid_x) {
-    /*Drawing an esker at specified positions*/
+    /*Draws an esker at specified positions*/
     mvaddstr(up_y, up_x, " _");
     mvaddstr(mid_y, mid_x, " / \\");
 }
 
 void SpawnEsker_in_Window(WINDOW *win, int up_y, int up_x, int mid_y, int mid_x) {
-    /*Drawing an esker in a window at specified positions*/
+    /*Draws an esker in a window at specified positions*/
     mvwprintw(win, up_y, up_x, " _");
     mvwprintw(win, mid_y, mid_x, "/ \\");
 }
@@ -225,15 +226,17 @@ void PrintParkWoods() {
   const int window_cols = COLS;
   const int window_lines = LINES;
 
-    /*Scaling factor calculations to adapt to the window size*/
-  const float scaleX = window_cols / 125.0; /*Adjusting based on the original window size of 125 columns*/
-  const float scaleY = window_lines / 45.0; /*Adjusting based on the original window size of 45 lines*/
+  /*Scaling factor calculations to adapt to the window size*/
+  const float fscaleX = window_cols / 125.0; /*Adjusting based on the original window size of 125 columns*/
+  const float fscaleY = window_lines / 45.0; /*Adjusting based on the original window size of 45 lines*/
+  const int scaleX = std::round(scaleX); /*Rounding the float type into the nearest integer value*/
+  const int scaleY = std::round(scaleY); /*To make these values actually usable for printing*/
+
 
   leftsidetrees=cr_parktrees(23*scaleY, 47*scaleX, 1*scaleY, 1*scaleX);
   rightsidetrees=cr_parktrees(23*scaleY, 46*scaleX, 1*scaleY, window_cols - 45*scaleX);
   above_esker=cr_eskers(8*scaleY, 26*scaleX, 1*scaleY, MIDDLE_X_AXIS - 12*scaleX);
 
-    // Adjusting coordinates based on the scaling factors
     int y[6]={1, 4, 8, 12, 16, 19};
     int x[10]={15, 23, 3, 9, 30, 35, 42, 19, 34, 15};
     int ex[7]={1, 4, 7, 10, 14, 18, 22};

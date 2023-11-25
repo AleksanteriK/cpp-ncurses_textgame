@@ -19,24 +19,16 @@ void DialogueBox() {
     /*Logic for game-related output, conversations, and text*/
 }
 
-void PrintDebugInfo() {
-   if (LINES<=30) {
+void PrintDebugInfo(/*int& scaleY, int& scaleX*/) {
+   if (LINES>=45 && LINES<=75) {
   attron(COLOR_PAIR(6));
-  mvaddstr(MIDDLE_Y_AXIS+6,MIDDLE_X_AXIS-35, "Terminal size:");
-  mvprintw(MIDDLE_Y_AXIS+7,MIDDLE_X_AXIS-35, "Lines: %d",LINES);
-  mvprintw(MIDDLE_Y_AXIS+8,MIDDLE_X_AXIS-35, "Cols: %d",COLS);
-  mvprintw(MIDDLE_Y_AXIS+9,MIDDLE_X_AXIS-35, "mid_y: %d",MIDDLE_Y_AXIS);
-  mvprintw(MIDDLE_Y_AXIS+10,MIDDLE_X_AXIS-35, "mid_x: %d",MIDDLE_X_AXIS);
-  attroff(COLOR_PAIR(6));
-  }
-  
-  else if (LINES>30 && LINES<=50) {
-  attron(COLOR_PAIR(6));
-  mvaddstr(MIDDLE_Y_AXIS+11,MIDDLE_X_AXIS-35, "Terminal size:");
-  mvprintw(MIDDLE_Y_AXIS+12,MIDDLE_X_AXIS-35, "Lines: %d",LINES);
-  mvprintw(MIDDLE_Y_AXIS+13,MIDDLE_X_AXIS-35, "Cols: %d",COLS);
-  mvprintw(MIDDLE_Y_AXIS+14,MIDDLE_X_AXIS-35, "mid_y: %d",MIDDLE_Y_AXIS);
-  mvprintw(MIDDLE_Y_AXIS+15,MIDDLE_X_AXIS-35, "mid_x: %d",MIDDLE_X_AXIS);
+  mvaddstr(LINES-LINES+1,COLS-COLS+1, "Terminal size:");
+  mvprintw(LINES-LINES+2,COLS-COLS+1, "Lines: %d",LINES);
+  mvprintw(LINES-LINES+3,COLS-COLS+1, "Cols: %d",COLS);
+  mvprintw(LINES-LINES+4,COLS-COLS+1, "mid_y: %d",MIDDLE_Y_AXIS);
+  mvprintw(LINES-LINES+5,COLS-COLS+1, "mid_x: %d",MIDDLE_X_AXIS);
+  /*mvprintw(LINES-LINES+6,COLS-COLS+1, "scale_y: %d",scaleY);
+  mvprintw(LINES-LINES+7,COLS-COLS+1, "scale_x: %d",scaleX);*/
   attroff(COLOR_PAIR(6));
   }
 
@@ -47,6 +39,8 @@ void PrintDebugInfo() {
   mvprintw(42,1, "Cols: %d",COLS);
   mvprintw(43,1, "mid_y: %d",MIDDLE_Y_AXIS);
   mvprintw(44,1, "mid_x: %d",MIDDLE_X_AXIS);
+  /*mvprintw(45,1, "scale_y: %d",scaleY);
+  mvprintw(46,1, "scale_x: %d",scaleX);*/
   attroff(COLOR_PAIR(6));
   }
 }

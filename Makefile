@@ -2,8 +2,8 @@ CXX = g++
 CXXFLAGS = -std=c++11
 LDFLAGS = -lncurses
 
-textadventure: main.o player.o environment.o gamewindows.o gamefunctions.o
-	$(CXX) $(CXXFLAGS) -o textadventure main.o player.o environment.o gamewindows.o gamefunctions.o $(LDFLAGS)
+textadventure: main.o player.o environment.o gamewindows.o gamefunctions.o language.o titles_menus.o
+	$(CXX) $(CXXFLAGS) -o textadventure main.o player.o environment.o gamewindows.o gamefunctions.o language.o titles_menus.o $(LDFLAGS)
 
 main.o: main.cpp
 	$(CXX) $(CXXFLAGS) -c main.cpp
@@ -20,5 +20,10 @@ windows.o: gamewindows.cpp gamewindows.h
 gamefunctions.o: gamefunctions.cpp gamefunctions.h
 	$(CXX) $(CXXFLAGS) -c gamefunctions.cpp
 
+language.o: language.cpp language.h
+	$(CXX) $(CXXFLAGS) -c language.cpp
+
+titles_menus.o: titles_menus.cpp titles_menus.h
+	$(CXX) $(CXXFLAGS) -c titles_menus.cpp
 clean:
 	rm -f *.o textadventure

@@ -58,34 +58,43 @@ and the game itself is played in a "hidden" x,y grid.
 #include "player.h"
 #include "gamewindows.h"
 #include "gamefunctions.h"
+#include "language.h"
+#include "titles_menus.h"
 
 #define MIDDLE_Y_AXIS (LINES/2)
 #define MIDDLE_X_AXIS (COLS/2)
 
 int main(void) {
+  Language selectedLanguage;
 /*---------------------------Error Checks-----------------------------*/
   initscr();
   clear();
   has_colors();
 
-  if (has_colors()==FALSE) {
+  if (has_colors() == FALSE) {
     endwin();
     std::cout<<"Your terminal does not support color"<<std::endl;
+    std::cout<<" .. .. ..                         .."<<std::endl;
+    std::cout<<"Kayttamasi terminaali ei tue vareja"<<std::endl;
     napms(3000);
     exit(1);
   }
 
-  if ((LINES<30 || COLS<114) || (LINES<30 && COLS<114)) {
+  if ((LINES<45 || COLS<125) || (LINES<45 && COLS<125)) {
     endwin();
-    std::cout<<"Your terminal is too small, expand it!"<<std::endl;
-    /*attron(COLOR_PAIR(6));
-    mvaddstr(MIDDLE_Y_AXIS,MIDDLE_X_AXIS-5, "Your terminal is too small");
-    attroff(COLOR_PAIR(6));*/
-    napms(3500);
+    std::cout<<"/EN/ Your terminal is too small, expand it and launch again!"<<std::endl;
+    std::cout<<"      ..    ..                                         .."<<std::endl;
+    std::cout<<"/FI/ Kayttamasi terminaali on liian pieni, suurenna sita"<<std::endl;
+    std::cout<<"                                       .."<<std::endl;
+    std::cout<<"     tai vaihda terminaalia ja kaynnista uudelleen\n"<<std::endl;
+    napms(5000);
     return 0;
   }
 
   start_color();
+  init_pair(1, COLOR_WHITE, COLOR_BLACK); /*FIRST menu background and text*/
+  init_pair(3, COLOR_CYAN, COLOR_CYAN); /*FIRST menu decorations*/
+  init_pair(5, COLOR_BLACK, COLOR_CYAN); /*Select language text*/
   init_pair(8, COLOR_BLACK, COLOR_GREEN);  /*Forest*/
   init_pair(7, COLOR_WHITE, COLOR_BLUE); /*Water*/
   init_pair(6, COLOR_RED, COLOR_GREEN); /*Error*/
@@ -94,10 +103,48 @@ int main(void) {
 /*------------------------------------------------------------------*/
 
 /*-----------------------------PROGRAM------------------------------*/
-  PrintPark();
-  PrintDebugInfo(); //temp
+  int languagechoice;
+  LanguageSelectMenu(MIDDLE_Y_AXIS, MIDDLE_X_AXIS);
+  keypad(stdscr, TRUE);
+  noecho();
+  nodelay(stdscr, TRUE);
+
+  while (languagechoice != KEY_F(1) 
+    && languagechoice != KEY_F(2)
+    && languagechoice != KEY_F(3)) {
+    languagechoice = getch();
+    switch (languagechoice) {
+        case KEY_F(1):
+        return 0;
+        break;
+
+        case KEY_F(2):
+        selectedLanguage = Language::ENGLISH;
+        break;
+
+        case KEY_F(3):
+        selectedLanguage = Language::FINNISH;
+        break;
+
+        case KEY_F(10):
+        NULL; /*Placeholder*/
+        break;
+
+        default:
+        NULL;
+        break;
+    }
+  }
+
+  attron(COLOR_PAIR (1));
+  mvaddstr(MIDDLE_Y_AXIS+15, MIDDLE_X_AXIS-22, "You have chosen a language/Olet valinnut kielen");
+  attroff(COLOR_PAIR (1));
   refresh();
-  napms(10000);
+  napms(5000);
+  PrintPark();
+  PrintDebugInfo(); /*temp*/
+  refresh();
+  napms(10000); /*temp*/
 /*------------------------------------------------------------------*/
   endwin();
   return 0;
