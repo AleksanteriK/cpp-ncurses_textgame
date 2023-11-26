@@ -11,7 +11,7 @@ WINDOW *Text_window(int height, int width, int starty, int startx);
 
 std::string Userinput();
 
-void DialogueBox();
+void WriteDialogue();
 
 void PrintDebugInfo();
 

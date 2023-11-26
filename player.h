@@ -8,10 +8,12 @@ public:
 
     Player(int startX, int startY);
 
-    void moveRight();
-    void moveLeft();
-    void moveForward();
-    void moveBack();
+    void MoveRight();
+    void MoveLeft();
+    void MoveForward();
+    void MoveBack();
+    int ReturnPosition_y();
+    int ReturnPosition_x();
 };
 
 #endif

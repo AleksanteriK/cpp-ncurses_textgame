@@ -3,20 +3,31 @@
 #define MIDDLE_Y_AXIS (LINES/2)
 #define MIDDLE_X_AXIS (COLS/2)
 
-Player::Player(int startX, int startY) : position_x(startX), position_y(startY) {}
+Player::Player(int position_x, int position_y) {
+    this -> position_x = position_x;
+    this -> position_y = position_y;
+}
 
-void Player::moveRight() {
+void Player::MoveRight() {
     position_x++;
 }
 
-void Player::moveLeft() {
+void Player::MoveLeft() {
     position_x--;
 }
 
-void Player::moveForward() {
+void Player::MoveForward() {
     position_y++;
 }
 
-void Player::moveBack() {
+void Player::MoveBack() {
     position_y--;
+}
+
+int Player::ReturnPosition_y() {
+    return position_y;
+}
+
+int Player::ReturnPosition_x() {
+    return position_x;
 }

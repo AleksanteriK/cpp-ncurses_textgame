@@ -102,7 +102,7 @@ int main(void) {
   curs_set(0);
 /*------------------------------------------------------------------*/
 
-/*-----------------------------PROGRAM------------------------------*/
+/*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^PROGRAM^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
   int languagechoice;
   LanguageSelectMenu(MIDDLE_Y_AXIS, MIDDLE_X_AXIS);
   keypad(stdscr, TRUE);
@@ -137,15 +137,48 @@ int main(void) {
   }
 
   attron(COLOR_PAIR (1));
-  mvaddstr(MIDDLE_Y_AXIS+15, MIDDLE_X_AXIS-22, "You have chosen a language/Olet valinnut kielen");
+  mvaddstr(MIDDLE_Y_AXIS+15, MIDDLE_X_AXIS-22, "You have chosen a language / Olet valinnut kielen");
   attroff(COLOR_PAIR (1));
   refresh();
   napms(5000);
+  clear();
+
+  /*--------------------First part of the story---------------------*/
+  Map ParkMap(15, 15, 3, 3, 7, 7, 15, 15, "Part 1: Into the unknown / Osa 1: Kohti tuntematonta");
+  int playerpark_y=ParkMap.playerpos_y;
+  int playerpark_x=ParkMap.playerpos_x;
+  Player firstplayer(playerpark_x, playerpark_y);
+  attron(COLOR_PAIR (1));
+  ParkMap.Print_Chapter_text(MIDDLE_Y_AXIS, MIDDLE_X_AXIS-22);
+  attroff(COLOR_PAIR (1));
+  refresh();
+  napms(5000);
+
   PrintPark();
   PrintDebugInfo(); /*temp*/
   refresh();
+
+  /*test*/
+  WINDOW* dialogueBox = newwin(5, 30, LINES-10, MIDDLE_X_AXIS-15);
+  box(dialogueBox, 0, 0);
+  wrefresh(dialogueBox);
+  mvwprintw(dialogueBox, 1, 1, "This is a dialogue box!");
+  wrefresh(dialogueBox);
+  napms(5000);
+  destroy_win(dialogueBox);
+  PrintPark();
+  PrintDebugInfo(); /*temp*/
+  refresh();
+  /**/
+  
+  /*while (playerpark_x != ParkMap.exit_x && playerpark_y != ParkMap.exit_y) {
+    
+  }
+  refresh();*/
   napms(10000); /*temp*/
 /*------------------------------------------------------------------*/
+
+/*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
   endwin();
   return 0;
 }

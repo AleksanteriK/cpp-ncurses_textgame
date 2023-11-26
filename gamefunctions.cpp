@@ -15,7 +15,7 @@ std::string Userinput() {
     return "Temp";  /*Placeholder return value*/
 }
 
-void DialogueBox() {
+void WriteDialogue() {
     /*Logic for game-related output, conversations, and text*/
 }
 

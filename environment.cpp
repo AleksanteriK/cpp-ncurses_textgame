@@ -16,43 +16,90 @@ const char waves[5][3]={ /*Static waves for pond*/
 };
 
 void SpawnThick(int up_y, int up_x, int mid_y, int mid_x, int bottom_y, int bottom_x) {
-    /*Draws a thick tree at specified positions*/
     mvaddstr(up_y, up_x, " /|\\ ");
     mvaddstr(mid_y, mid_x, "//|\\\\ ");
     mvaddstr(bottom_y, bottom_x, "  I  ");
 }
 
 void SpawnThick_in_Window(WINDOW *win, int up_y, int up_x, int mid_y, int mid_x, int bottom_y, int bottom_x) {
-    /*Draws a thick tree in a window at specified positions*/
     mvwprintw(win, up_y, up_x, " /|\\ ");
     mvwprintw(win, mid_y, mid_x, "//|\\\\ ");
     mvwprintw(win, bottom_y, bottom_x, "  I  ");
 }
 
 void SpawnThin(int up_y, int up_x, int mid_y, int mid_x, int bottom_y, int bottom_x) {
-    /*Draws a thin tree at specified positions*/
     mvaddstr(up_y, up_x, "  ^  ");
     mvaddstr(mid_y, mid_x, " /|\\ ");
     mvaddstr(bottom_y, bottom_x, "  I ");
 }
 
 void SpawnThin_in_Window(WINDOW *win, int up_y, int up_x, int mid_y, int mid_x, int bottom_y, int bottom_x) {
-    /*Draws a thin tree in a window at specified positions*/
     mvwprintw(win, up_y, up_x, "  ^  ");
     mvwprintw(win, mid_y, mid_x, " /|\\ ");
     mvwprintw(win, bottom_y, bottom_x, "  I ");
 }
 
 void SpawnEsker(int up_y, int up_x, int mid_y, int mid_x) {
-    /*Draws an esker at specified positions*/
     mvaddstr(up_y, up_x, " _");
     mvaddstr(mid_y, mid_x, " / \\");
 }
 
 void SpawnEsker_in_Window(WINDOW *win, int up_y, int up_x, int mid_y, int mid_x) {
-    /*Draws an esker in a window at specified positions*/
     mvwprintw(win, up_y, up_x, " _");
     mvwprintw(win, mid_y, mid_x, "/ \\");
+}
+
+void SpawnCabin(int top_y, int top_x,
+                    int upmid_y, int upmid_x,
+                    int mid_y, int mid_x,
+                    int lowmid_y, int lowmid_x,
+                    int bot_y, int bot_x) 
+    {
+        mvaddstr(top_y, top_x, " _| ");
+        mvaddstr(upmid_y, upmid_x, "/  \\");
+        mvaddstr(mid_y, mid_x, "|__|");
+        mvaddstr(lowmid_y, lowmid_x, "|_||");
+        mvaddstr(bot_y, bot_x, "----");
+
+    }
+
+    void SpawnCabin_in_Window(WINDOW *win, int top_y, int top_x,
+                              int upmid_y, int upmid_x,
+                              int mid_y, int mid_x,
+                              int lowmid_y, int lowmid_x,
+                              int bot_y, int bot_x) 
+    {
+        mvwprintw(win, top_y, top_x, " /\\ ");
+        mvwprintw(win, upmid_y, upmid_x, "/  \\");
+        mvwprintw(win, mid_y, mid_x, "|__|");
+        mvwprintw(win, lowmid_y, lowmid_x, "|||");
+        mvwprintw(win, bot_y, bot_x, "###");
+        mvwprintw(win, top_y - 1, top_x + 1, "||");
+        mvwprintw(win, top_y - 2, top_x + 1, "||");
+    }
+
+Map::Map(int gridsize_y, int gridsize_x, int player_pos_y, int player_pos_x, 
+int secret_x, int secret_y, int exit_x, int exit_y, std::string chaptertext) {
+    this -> gridsize_y = gridsize_y;
+    this -> gridsize_x = gridsize_x;
+    this -> playerpos_y = player_pos_y;
+    this -> playerpos_x = player_pos_x;
+    this -> secret_x = secret_x;
+    this -> secret_y = secret_y;
+    this -> exit_x = exit_x;
+    this -> exit_y = exit_y;
+    this -> chaptertext = chaptertext;
+}
+
+int Map::ReturnPlayer_y() {
+  return playerpos_y;
+}
+int Map::ReturnPlayer_x() {
+  return playerpos_x;
+}
+
+void Map::Print_Chapter_text(int y, int x) {
+  mvprintw(y,x,"%s",chaptertext.c_str());
 }
 
 void PrintPark() {

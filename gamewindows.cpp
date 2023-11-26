@@ -42,3 +42,9 @@ WINDOW *cr_eskers(int height, int width, int starty, int startx) {
     wrefresh(local_win);
     return local_win;
 }
+
+void destroy_win(WINDOW *local_win) {
+  wborder(local_win, ' ', ' ', ' ',' ',' ',' ',' ',' ');
+  wrefresh(local_win);
+  delwin(local_win);
+}
