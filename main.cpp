@@ -3,15 +3,15 @@
  *   Copyright (C) 2023 by Aleksanteri Koivisto                            *
  *   juho.koivisto00@outlook.com                                           *
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ *   This program and it's source files are free software; you can redis-  *
+ *   tribute it and/or modify it under the terms of the GNU General Public *
+ *   License as published by the Free Software Foundation; either version 2*
+ *   of the License, or (at your option) any later version.                *
  *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
+ *   This program is distributed in the hope that it will be enter-,       *
+ *   taining and fun, but WITHOUT ANY WARRANTY; without even the implied   *
+ *   warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.      *
+ *   See the GNU General Public License for more details.                  *
  *                                                                         *
  *                                                                         *
  ***************************************************************************/
@@ -54,9 +54,6 @@ and the game itself is played in a "hidden" x,y grid.
 #include <ncurses.h>
 #include <curses.h>
 #include <unistd.h>
-#include <thread> /*Making a syscall in it's own thread*/
-#include <cstdlib>  /*For syscalls*/
-/*Thread doesn't seem to work on my compiler at the moment*/
 #include "environment.h"
 #include "player.h"
 #include "gamewindows.h"
@@ -65,42 +62,68 @@ and the game itself is played in a "hidden" x,y grid.
 #include "titles_menus.h"
 
 #if defined(_WIN32) || defined(_WIN64)
+#include <ios>
+#include <limits>
 #include <windows.h>
+#include <string.h>
 #define WINDOWS_RESIZE_HANDLING
 #endif
 
 #if defined(__unix__) || defined(__linux__)
-#include <csignal>
-#include <unistd.h>
 #define UNIX_RESIZE_HANDLING
 #endif
 
 /*Windows-specific code for handling resize*/
 #ifdef WINDOWS_RESIZE_HANDLING
-int HandleWindowsResizeToSmall() {
-  HWND consoleWindow;
-  consoleWindow = GetConsoleWindow();
-    if (consoleWindow == NULL) {
-        std::cerr <<"Error retrieving window handle. Error code: "<< GetLastError() <<std::endl;
-        return 1;  /*Return an error*/
+
+char ask_input() {    
+    char cmd[6];
+    fgets(cmd, 6, stdin);
+
+    size_t len = strlen(cmd);
+    if (len > 0 && cmd[len - 1] == '\n') {
+        cmd[len - 1] = '\0';
+    } else {
+        // Handle the case where the input buffer is too small
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
     }
 
-    if (!IsWindowVisible(consoleWindow)) {
-        std::cerr << "Error: Console window is not visible." << std::endl;
-        return 1;  // Return an error*/
+    fflush(stdin);  // Clear any remaining characters in the input buffer
+    return cmd[0];
+}
+
+int ResizeWindowsTerminalToSmall_SYS() {
+    system("mode con:cols=125 lines=45");
+    if (system("mode con:cols=125 lines=45") != 0) {
+      return 1;
     }
 
-    SMALL_RECT windowSize = {0, 0, 123, 43};
-    if (!SetConsoleWindowInfo(consoleWindow, TRUE, &windowSize)) {
+    else {
+      return 0;
+    }
+
+  }
+
+int ResizeWindowsTerminalToSmall_API(int8_t width, int8_t height) {
+    COORD      coord = { width, height };
+    SMALL_RECT rmin  = { 0, 0, 1, 1 };
+    SMALL_RECT rect  = { 0, 0, width-1, height-1 };
+
+    HANDLE Handle = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleWindowInfo(Handle, TRUE, &rmin);
+    SetConsoleScreenBufferSize(Handle, coord);
+    SetConsoleWindowInfo(Handle, TRUE, &rect);
+
+    if (!SetConsoleWindowInfo(Handle, TRUE, &rect)) {
         std::cerr<<"Error setting window size. Error code: "<< GetLastError() <<std::endl;
         return 1;  /*Return error*/
     }
 
-    std::cout<<"Window handle: "<<consoleWindow<<std::endl;
-    std::cout<<"Setting window size to: "<< windowSize.Right - windowSize.Left + 1
-    <<"x"<<windowSize.Bottom - windowSize.Top + 1<<std::endl;
+    else {
+      return 0;
+    }
 
-    return 0;  /*Return 0 to indicate success*/
   }
 #endif
 
@@ -116,7 +139,76 @@ void HandleLinuxResize(int signo) {
 #define MIDDLE_X_AXIS (COLS/2)
 
 int main(void) {
+  int8_t min_win_x = 125;
+  int8_t min_win_y = 45;
   Language selectedLanguage;
+
+  #ifdef WINDOWS_RESIZE_HANDLING
+  char input = '\0';
+  int check_err = -1;
+  int get_return_from_sys_call;
+  std::cout<<"/EN/ Choose your terminal window's size"<<std::endl;
+  std::cout<<"/EN/ You can either choose to play in a prefixed small window"<<std::endl;
+  std::cout<<"/EN/ or you can expand the window to fullscreen or somewhere between"<<std::endl;
+  std::cout<<"/EN/ but the size must be at least 45 characters tall and 125 characters wide"<<std::endl;
+  std::cout<<"/EN/ Insert 1 and press enter if you want to play in a small window"<<std::endl;
+  std::cout<<"/EN/ Insert 2 and press enter if you want to play in your own specified window size\n"<<std::endl;
+  std::cout<<"                            !!!NOTE!!!"<<std::endl;
+  std::cout<<"      Expand the terminal window size before you continue with option B\n"<<std::endl;
+  std::cout<<"-------------------------------------------------------------------------------------"<<std::endl;
+  std::cout<<"/FI/ Valitse terminaalisi ikkunan koko"<<std::endl;
+  std::cout<<"/FI/ Voit valita joko pelata valmiiksi maaritellyssa pienessa ikkunassa"<<std::endl;
+  std::cout<<"/FI/ tai voit laajentaa ikkunan koko naytolle tai johonkin silta valilta"<<std::endl;
+  std::cout<<"/FI/ mutta ikkunan koon on oltava vahintaan 45 merkkia korkea ja 125 merkkia levea\n"<<std::endl;
+  std::cout<<"/FI/ Syota 1 pelataksesi pienessa ikkunassa"<<std::endl;
+  std::cout<<"/FI/ Syota 2 pelataksesi omassa maaritetyssa ikkunakoossa\n"<<std::endl;
+  std::cout<<"                           !!!HUOM!!! "<<std::endl;
+  std::cout<<"     Suurenna terminaalisi ikkunaa ennen kuin jatkat valinnalla B\n"<<std::endl;
+
+  /*Flushing the input buffer so the prompt may not freeze*/
+  fflush(stdin);
+  do {
+    input = toupper(ask_input());
+
+    if (input == 'A') {
+      check_err = ResizeWindowsTerminalToSmall_API(125, 45);
+
+      if (check_err == 1) {
+        std::cout<<"Attempt Failed";
+        int get_return_from_sys_call = ResizeWindowsTerminalToSmall_SYS();
+        if (get_return_from_sys_call == 1) {
+          std::cout<<"Attempt to resize your terminal window wasn't successful, use other option";
+        }
+
+        else {
+          std::cout<<"Starting the game...";
+          check_err = 0;
+        }
+      }
+
+      else {
+        check_err = 0;
+      }
+
+    }
+
+    else if (input == 'B') {
+      check_err = 0;
+      std::cout<<"Starting the game...";
+    }
+
+    else {
+      std::cout<<"Invalid choice. Please enter A or B."<<std::endl;
+      std::cout<<"Virhe, syota joko A tai B."<<std::endl;
+    }
+
+  } while ((input != 'A' && input != 'B') || check_err != 0 );
+    
+#endif
+
+#ifdef LINUX_RESIZE_HANDLING
+    //NULL
+#endif
 /*---------------------------Error Checks-----------------------------*/
   initscr();
   clear();
@@ -131,102 +223,6 @@ int main(void) {
     exit(1);
   }
 
-  clear();
-  endwin();
-
-#ifdef WINDOWS_RESIZE_HANDLING
-  int terminalchoice=0;
-  int check_err = -1;
-  std::cout<<"/EN/ Choose your terminal window's size"<<std::endl;
-  std::cout<<"/EN/ You can either choose to play in a prefixed small window"<<std::endl;
-  std::cout<<"/EN/ or you can expand the window to fullscreen or somewhere between"<<std::endl;
-  std::cout<<"/EN/ but the size must be at least 45 characters tall and 125 characters wide"<<std::endl;
-  std::cout<<"/EN/ Insert 1 and press enter if you want to play in a small window"<<std::endl;
-  std::cout<<"/EN/ Insert 2 and press enter if you want to play in your own specified window size\n"<<std::endl;
-  std::cout<<"                            !!!NOTE!!!"<<std::endl;
-  std::cout<<"      Set the terminal window size before you continue with F2\n"<<std::endl;
-  std::cout<<"-------------------------------------------------------------------------------------"<<std::endl;
-  std::cout<<"/FI/ Valitse terminaalisi ikkunan koko"<<std::endl;
-  std::cout<<"/FI/ Voit valita joko pelata valmiiksi maaritellyssä pienessa ikkunassa"<<std::endl;
-  std::cout<<"/FI/ tai voit laajentaa ikkunan koko naytolle tai johonkin silta valilta"<<std::endl;
-  std::cout<<"/FI/ mutta ikkunan koon on oltava vahintaan 45 merkkia korkea ja 125 merkkia levea\n"<<std::endl;
-  std::cout<<"/FI/ Syota 1 pelataksesi pienessa ikkunassa"<<std::endl;
-  std::cout<<"/FI/ Syota 2 pelataksesi omassa maaritetyssa ikkunakoossa\n"<<std::endl;
-  std::cout<<"                           !!!HUOM!!! "<<std::endl;
-  std::cout<<"     Aseta terminaali-ikkunan koko ennen kuin jatkat F2:lla\n"<<std::endl;
-
-  /*do {
-    std::cin>>terminalchoice;
-
-    if (terminalchoice==1) {
-      check_err=ResizeWindowsTerminalToSmall();
-      if (check_err == 1) {
-        std::cout<<"Error setting window size using mode con command."<<std::endl;
-        std::cout<<"Choose other option"<<std::endl;
-        std::cout<<"Virhe ikkunakoon asettamisessa kayttaen mode con -komentoa." <<std::endl;
-        std::cout<<"Valitse toinen vaihtoehto.\n"<<std::endl;
-      }
-
-    }
-
-    else if (terminalchoice==2) {
-      check_err = 0;
-      std::cout<<"Starting the game...";
-    }
-
-    else {
-      std::cout<<"Invalid choice. Please enter 1 or 2."<<std::endl;
-      std::cout<<"Virhe, syota joko 1 tai 2."<<std::endl;
-    }
-
-  } while ((terminalchoice != 1 && terminalchoice != 2) || check_err != 0 );*/
-
-  do {
-    std::cin>>terminalchoice;
-
-    if (terminalchoice==1) {
-      check_err=HandleWindowsResizeToSmall();
-
-      /*if (check_err==1) {
-        system("mode con:cols=125 lines=45");
-
-        if (system("mode con:cols=125 lines=45") != 0) {
-          int debugpause;
-          std::cout<<"Error setting window size using mode con command."<<std::endl;
-          std::cout<<"Choose other option"<<std::endl;
-          std::cout<<"Virhe ikkunakoon asettamisessa kayttaen mode con -komentoa." <<std::endl;
-          std::cout<<"Valitse toinen vaihtoehto.\n"<<std::endl;
-          std::cin>>debugpause;
-          check_err = 0;
-        }
-
-      }
-      
-      else {
-        check_err = 0;
-      }*/
-    }
-
-    else if (terminalchoice==2) {
-      check_err = 0;
-      std::cout<<"Starting the game...";
-    }
-
-    else {
-      std::cout<<"Invalid choice. Please enter 1 or 2."<<std::endl;
-      std::cout<<"Virhe, syota joko 1 tai 2."<<std::endl;
-    }
-
-  } while ((terminalchoice != 1 && terminalchoice != 2) || check_err != 0 );
-    
-#endif
-
-#ifdef LINUX_RESIZE_HANDLING
-    //NULL
-#endif
-
-  initscr();
-  clear();
   start_color();
   init_pair(1, COLOR_WHITE, COLOR_BLACK); /*FIRST languagemenu background and text*/
   init_pair(3, COLOR_CYAN, COLOR_CYAN); /*FIRST menu decorations*/

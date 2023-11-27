@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11
+CXXFLAGS = -std=c++17
 LDFLAGS = -lncurses
 
 textadventure: main.o player.o environment.o gamewindows.o gamefunctions.o language.o titles_menus.o

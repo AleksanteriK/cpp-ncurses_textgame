@@ -45,17 +45,3 @@ void PrintDebugInfo(/*int& scaleY, int& scaleX*/) {
   attroff(COLOR_PAIR(6));
   }
 }
-
-void TerminalDebug() {
-    std::cout<<"/EN/ Your terminal is too small, expand it!"<<std::endl;
-    std::cout<<"      ..    ..                                         .."<<std::endl;
-    std::cout<<"/FI/ Kayttamasi terminaali on liian pieni, suurenna sita"<<std::endl;
-    std::cout<<"                                       "<<std::endl;
-    std::cout<<"     tai vaihda terminaalia\n"<<std::endl;
-}
-
-void ResizeTerminalInfo_for_Ncurses() {
-    mvaddstr(MIDDLE_Y_AXIS, MIDDLE_X_AXIS-17, "------------------------------------------------------");
-    mvaddstr(MIDDLE_Y_AXIS+1, MIDDLE_X_AXIS-17,"    Expand the terminal / Suurenna terminaalia");
-    mvaddstr(MIDDLE_Y_AXIS+2, MIDDLE_X_AXIS-17, "       F1 to exit        Paina F1 poistuaksesi");
-}

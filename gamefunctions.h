@@ -15,8 +15,4 @@ void WriteDialogue();
 
 void PrintDebugInfo();
 
-void TerminalDebug();
-
-void ResizeTerminalInfo_for_Ncurses();
-
 #endif

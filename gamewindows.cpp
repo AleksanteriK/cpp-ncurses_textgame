@@ -48,15 +48,3 @@ void destroy_win(WINDOW *local_win) {
   wrefresh(local_win);
   delwin(local_win);
 }
-
-int ResizeWindowsTerminalTo_Small() {
-    system("mode con:cols=125 lines=45");
-    if (system("mode con:cols=125 lines=45") != 0) {
-      return 1;
-    }
-
-    else {
-      return 0;
-    }
-
-  }

@@ -11,6 +11,5 @@ WINDOW *cr_parktrees(int height, int width, int starty, int startx);
 WINDOW *cr_eskers(int height, int width, int starty, int startx);
 void destroy_win(WINDOW *local_win);
 
-int ResizeWindowsTerminalTo_Small();
-
 #endif
+
