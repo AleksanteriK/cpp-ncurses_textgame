@@ -54,12 +54,63 @@ and the game itself is played in a "hidden" x,y grid.
 #include <ncurses.h>
 #include <curses.h>
 #include <unistd.h>
+#include <thread> /*Making a syscall in it's own thread*/
+#include <cstdlib>  /*For syscalls*/
+/*Thread doesn't seem to work on my compiler at the moment*/
 #include "environment.h"
 #include "player.h"
 #include "gamewindows.h"
 #include "gamefunctions.h"
 #include "language.h"
 #include "titles_menus.h"
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#define WINDOWS_RESIZE_HANDLING
+#endif
+
+#if defined(__unix__) || defined(__linux__)
+#include <csignal>
+#include <unistd.h>
+#define UNIX_RESIZE_HANDLING
+#endif
+
+/*Windows-specific code for handling resize*/
+#ifdef WINDOWS_RESIZE_HANDLING
+int HandleWindowsResizeToSmall() {
+  HWND consoleWindow;
+  consoleWindow = GetConsoleWindow();
+    if (consoleWindow == NULL) {
+        std::cerr <<"Error retrieving window handle. Error code: "<< GetLastError() <<std::endl;
+        return 1;  /*Return an error*/
+    }
+
+    if (!IsWindowVisible(consoleWindow)) {
+        std::cerr << "Error: Console window is not visible." << std::endl;
+        return 1;  // Return an error*/
+    }
+
+    SMALL_RECT windowSize = {0, 0, 123, 43};
+    if (!SetConsoleWindowInfo(consoleWindow, TRUE, &windowSize)) {
+        std::cerr<<"Error setting window size. Error code: "<< GetLastError() <<std::endl;
+        return 1;  /*Return error*/
+    }
+
+    std::cout<<"Window handle: "<<consoleWindow<<std::endl;
+    std::cout<<"Setting window size to: "<< windowSize.Right - windowSize.Left + 1
+    <<"x"<<windowSize.Bottom - windowSize.Top + 1<<std::endl;
+
+    return 0;  /*Return 0 to indicate success*/
+  }
+#endif
+
+/*Linux-specific code for handling resize*/
+#ifdef LINUX_RESIZE_HANDLING
+void HandleLinuxResize(int signo) {
+    //NULL
+}
+#endif
+
 
 #define MIDDLE_Y_AXIS (LINES/2)
 #define MIDDLE_X_AXIS (COLS/2)
@@ -80,19 +131,104 @@ int main(void) {
     exit(1);
   }
 
-  if ((LINES<45 || COLS<125) || (LINES<45 && COLS<125)) {
-    endwin();
-    std::cout<<"/EN/ Your terminal is too small, expand it and launch again!"<<std::endl;
-    std::cout<<"      ..    ..                                         .."<<std::endl;
-    std::cout<<"/FI/ Kayttamasi terminaali on liian pieni, suurenna sita"<<std::endl;
-    std::cout<<"                                       .."<<std::endl;
-    std::cout<<"     tai vaihda terminaalia ja kaynnista uudelleen\n"<<std::endl;
-    napms(5000);
-    return 0;
-  }
+  clear();
+  endwin();
 
+#ifdef WINDOWS_RESIZE_HANDLING
+  int terminalchoice=0;
+  int check_err = -1;
+  std::cout<<"/EN/ Choose your terminal window's size"<<std::endl;
+  std::cout<<"/EN/ You can either choose to play in a prefixed small window"<<std::endl;
+  std::cout<<"/EN/ or you can expand the window to fullscreen or somewhere between"<<std::endl;
+  std::cout<<"/EN/ but the size must be at least 45 characters tall and 125 characters wide"<<std::endl;
+  std::cout<<"/EN/ Insert 1 and press enter if you want to play in a small window"<<std::endl;
+  std::cout<<"/EN/ Insert 2 and press enter if you want to play in your own specified window size\n"<<std::endl;
+  std::cout<<"                            !!!NOTE!!!"<<std::endl;
+  std::cout<<"      Set the terminal window size before you continue with F2\n"<<std::endl;
+  std::cout<<"-------------------------------------------------------------------------------------"<<std::endl;
+  std::cout<<"/FI/ Valitse terminaalisi ikkunan koko"<<std::endl;
+  std::cout<<"/FI/ Voit valita joko pelata valmiiksi maaritellyssä pienessa ikkunassa"<<std::endl;
+  std::cout<<"/FI/ tai voit laajentaa ikkunan koko naytolle tai johonkin silta valilta"<<std::endl;
+  std::cout<<"/FI/ mutta ikkunan koon on oltava vahintaan 45 merkkia korkea ja 125 merkkia levea\n"<<std::endl;
+  std::cout<<"/FI/ Syota 1 pelataksesi pienessa ikkunassa"<<std::endl;
+  std::cout<<"/FI/ Syota 2 pelataksesi omassa maaritetyssa ikkunakoossa\n"<<std::endl;
+  std::cout<<"                           !!!HUOM!!! "<<std::endl;
+  std::cout<<"     Aseta terminaali-ikkunan koko ennen kuin jatkat F2:lla\n"<<std::endl;
+
+  /*do {
+    std::cin>>terminalchoice;
+
+    if (terminalchoice==1) {
+      check_err=ResizeWindowsTerminalToSmall();
+      if (check_err == 1) {
+        std::cout<<"Error setting window size using mode con command."<<std::endl;
+        std::cout<<"Choose other option"<<std::endl;
+        std::cout<<"Virhe ikkunakoon asettamisessa kayttaen mode con -komentoa." <<std::endl;
+        std::cout<<"Valitse toinen vaihtoehto.\n"<<std::endl;
+      }
+
+    }
+
+    else if (terminalchoice==2) {
+      check_err = 0;
+      std::cout<<"Starting the game...";
+    }
+
+    else {
+      std::cout<<"Invalid choice. Please enter 1 or 2."<<std::endl;
+      std::cout<<"Virhe, syota joko 1 tai 2."<<std::endl;
+    }
+
+  } while ((terminalchoice != 1 && terminalchoice != 2) || check_err != 0 );*/
+
+  do {
+    std::cin>>terminalchoice;
+
+    if (terminalchoice==1) {
+      check_err=HandleWindowsResizeToSmall();
+
+      /*if (check_err==1) {
+        system("mode con:cols=125 lines=45");
+
+        if (system("mode con:cols=125 lines=45") != 0) {
+          int debugpause;
+          std::cout<<"Error setting window size using mode con command."<<std::endl;
+          std::cout<<"Choose other option"<<std::endl;
+          std::cout<<"Virhe ikkunakoon asettamisessa kayttaen mode con -komentoa." <<std::endl;
+          std::cout<<"Valitse toinen vaihtoehto.\n"<<std::endl;
+          std::cin>>debugpause;
+          check_err = 0;
+        }
+
+      }
+      
+      else {
+        check_err = 0;
+      }*/
+    }
+
+    else if (terminalchoice==2) {
+      check_err = 0;
+      std::cout<<"Starting the game...";
+    }
+
+    else {
+      std::cout<<"Invalid choice. Please enter 1 or 2."<<std::endl;
+      std::cout<<"Virhe, syota joko 1 tai 2."<<std::endl;
+    }
+
+  } while ((terminalchoice != 1 && terminalchoice != 2) || check_err != 0 );
+    
+#endif
+
+#ifdef LINUX_RESIZE_HANDLING
+    //NULL
+#endif
+
+  initscr();
+  clear();
   start_color();
-  init_pair(1, COLOR_WHITE, COLOR_BLACK); /*FIRST menu background and text*/
+  init_pair(1, COLOR_WHITE, COLOR_BLACK); /*FIRST languagemenu background and text*/
   init_pair(3, COLOR_CYAN, COLOR_CYAN); /*FIRST menu decorations*/
   init_pair(5, COLOR_BLACK, COLOR_CYAN); /*Select language text*/
   init_pair(8, COLOR_BLACK, COLOR_GREEN);  /*Forest*/
