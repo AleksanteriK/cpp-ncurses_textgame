@@ -70,7 +70,8 @@ and the game itself is played in a "hidden" x,y grid.
 #endif
 
 #if defined(__unix__) || defined(__linux__)
-#define UNIX_RESIZE_HANDLING
+#include <string.h>
+#define LINUX_RESIZE_HANDLING
 #endif
 
 /*Windows-specific code for handling resize*/
@@ -129,8 +130,33 @@ int ResizeWindowsTerminalToSmall_API(int8_t width, int8_t height) {
 
 /*Linux-specific code for handling resize*/
 #ifdef LINUX_RESIZE_HANDLING
-void HandleLinuxResize(int signo) {
-    //NULL
+
+char ask_input() {    
+    char cmd[6];
+    fgets(cmd, 6, stdin);
+
+    size_t len = strlen(cmd);
+    if (len > 0 && cmd[len - 1] == '\n') {
+        cmd[len - 1] = '\0';
+    } else {
+        /*If the input buffer is too small*/
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
+    }
+
+    fflush(stdin);  /*Clear any remaining characters in the input buffer*/
+    return cmd[0];
+}
+
+int ResizeLinuxTerminal() {
+  system("printf '\e[8;45;125t'");
+  if (system("printf '\e[8;45;125t'") != 0) {
+      return 1;
+    }
+
+    else {
+      return 0;
+    }
 }
 #endif
 
@@ -147,26 +173,12 @@ int main(void) {
   char input = '\0';
   int check_err = -1;
   int get_return_from_sys_call;
-  std::cout<<"/EN/ Choose your terminal window's size"<<std::endl;
-  std::cout<<"/EN/ You can either choose to play in a prefixed small window"<<std::endl;
-  std::cout<<"/EN/ or you can expand the window to fullscreen or somewhere between"<<std::endl;
-  std::cout<<"/EN/ but the size must be at least 45 characters tall and 125 characters wide"<<std::endl;
-  std::cout<<"/EN/ Insert 1 and press enter if you want to play in a small window"<<std::endl;
-  std::cout<<"/EN/ Insert 2 and press enter if you want to play in your own specified window size\n"<<std::endl;
-  std::cout<<"                            !!!NOTE!!!"<<std::endl;
-  std::cout<<"      Expand the terminal window size before you continue with option B\n"<<std::endl;
-  std::cout<<"-------------------------------------------------------------------------------------"<<std::endl;
-  std::cout<<"/FI/ Valitse terminaalisi ikkunan koko"<<std::endl;
-  std::cout<<"/FI/ Voit valita joko pelata valmiiksi maaritellyssa pienessa ikkunassa"<<std::endl;
-  std::cout<<"/FI/ tai voit laajentaa ikkunan koko naytolle tai johonkin silta valilta"<<std::endl;
-  std::cout<<"/FI/ mutta ikkunan koon on oltava vahintaan 45 merkkia korkea ja 125 merkkia levea\n"<<std::endl;
-  std::cout<<"/FI/ Syota 1 pelataksesi pienessa ikkunassa"<<std::endl;
-  std::cout<<"/FI/ Syota 2 pelataksesi omassa maaritetyssa ikkunakoossa\n"<<std::endl;
-  std::cout<<"                           !!!HUOM!!! "<<std::endl;
-  std::cout<<"     Suurenna terminaalisi ikkunaa ennen kuin jatkat valinnalla B\n"<<std::endl;
+
+  First_Terminal_Setup();
 
   /*Flushing the input buffer so the prompt may not freeze*/
   fflush(stdin);
+
   do {
     input = toupper(ask_input());
 
@@ -207,7 +219,43 @@ int main(void) {
 #endif
 
 #ifdef LINUX_RESIZE_HANDLING
-    //NULL
+  char input = '\0';
+  int check_err = -1;
+
+  First_Terminal_Setup();
+
+  /*Flushing the input buffer so the prompt may not freeze*/
+  fflush(stdin);
+
+  do {
+    input = toupper(ask_input());
+
+    if (input == 'A') {
+      check_err = ResizeLinuxTerminal();
+
+      if (check_err == 1) {
+        std::cout<<"Attempt to resize your terminal window wasn't successful,"<<std::endl;
+        std::cout<<"use other option";
+        }
+
+        else {
+          std::cout<<"Starting the game...";
+          check_err = 0;
+        }
+      }
+
+    else if (input == 'B') {
+      check_err = 0;
+      std::cout<<"Starting the game...";
+    }
+
+    else {
+      std::cout<<"Invalid choice. Please enter A or B."<<std::endl;
+      std::cout<<"Virhe, syota joko A tai B."<<std::endl;
+    }
+
+  } while ((input != 'A' && input != 'B') || check_err != 0 );
+  
 #endif
 /*---------------------------Error Checks-----------------------------*/
   initscr();
@@ -247,6 +295,9 @@ int main(void) {
     languagechoice = getch();
     switch (languagechoice) {
         case KEY_F(1):
+        clear();
+        delwin(stdscr);
+        endwin();
         return 0;
         break;
 
