@@ -8,6 +8,9 @@
  *   License as published by the Free Software Foundation; either version 2*
  *   of the License, or (at your option) any later version.                *
  *                                                                         *
+ *   However, all the rights are reserved regarding the game's story itself*
+ *   and all the fictional characters who are making appearance            *
+ *                                                                         *
  *   This program is distributed in the hope that it will be enter-,       *
  *   taining and fun, but WITHOUT ANY WARRANTY; without even the implied   *
  *   warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.      *
@@ -32,17 +35,22 @@
 **********************************************************************/
 
 /*********************************************************************
-                        Other comments  
+                          Other comments  
 ------------------------------                                          
-Minimum window size should be:
+Minimum window size:
 Lines(y):45
-Cols(x):125               
+Cols(x):125   
 ------------------------------
 ---------------------------------------------------------------------
-There could be a function which is always used when the game want's
-save progress. The game creates, if one does not exist, a file and
-write down the code there, so if you want to quit and continue later
-you can use the password to skip to the point you were last time.
+The printing cases differ based on the size of the terminal stepwise
+with the following lines and cols sizes:
+
+Lines(y):55
+Cols(x):160   //for most laptops might get these values on fullscreen
+
+Lines(y):62
+Cols(x):230
+
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------
 Everything graphical in the game is purely aesthetic, the player moves
@@ -54,12 +62,15 @@ and the game itself is played in a "hidden" x,y grid.
 #include <ncurses.h>
 #include <curses.h>
 #include <unistd.h>
+#include <cmath>
 #include "environment.h"
 #include "player.h"
 #include "gamewindows.h"
 #include "gamefunctions.h"
 #include "language.h"
 #include "titles_menus.h"
+#include "map_class.h"
+#include "woods_classes.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <ios>
@@ -85,12 +96,12 @@ char ask_input() {
     if (len > 0 && cmd[len - 1] == '\n') {
         cmd[len - 1] = '\0';
     } else {
-        // Handle the case where the input buffer is too small
+        /*Handling the case where the input buffer is too small*/
         int c;
         while ((c = getchar()) != '\n' && c != EOF);
     }
 
-    fflush(stdin);  // Clear any remaining characters in the input buffer
+    fflush(stdin);  /*Clear any remaining characters in the input buffer*/
     return cmd[0];
 }
 
@@ -118,7 +129,7 @@ int ResizeWindowsTerminalToSmall_API(int8_t width, int8_t height) {
 
     if (!SetConsoleWindowInfo(Handle, TRUE, &rect)) {
         std::cerr<<"Error setting window size. Error code: "<< GetLastError() <<std::endl;
-        return 1;  /*Return error*/
+        return 1;
     }
 
     else {
@@ -159,7 +170,6 @@ int ResizeLinuxTerminal() {
     }
 }
 #endif
-
 
 #define MIDDLE_Y_AXIS (LINES/2)
 #define MIDDLE_X_AXIS (COLS/2)
@@ -284,6 +294,66 @@ int main(void) {
 
 /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^PROGRAM^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
   int languagechoice;
+  
+  /*Defining the size of the terminal window and storing the information
+   So that it can be used easily when conditionally printing the game's
+   aesthetics depending on the window's size. At the same time checks
+   if the user's own decided window size is too small to play the game
+   if none of these following conditions are true*/
+
+  float terminal_window_size;
+
+  /*if either in following condition checks lines or cols are bigger than
+  their condition 1 or 2, save which one is and then pass it to printing functions*/
+  char condition_exceeding_var = 'n'; /*Default value null*/
+
+  if (LINES >= 45 && COLS >= 125 && LINES < 53 && COLS < 160) {
+      terminal_window_size = 1; /*smallest possible*/
+  }
+
+  else if (LINES >= 53 && COLS < 160 && COLS >= 125) {
+      terminal_window_size = 1.5;
+      condition_exceeding_var = 'l'; /*if LINES is bigger than for condition 1*/
+    }
+
+  else if (LINES < 53 && COLS >= 160 && LINES >= 45) {
+      terminal_window_size = 1.5;
+      condition_exceeding_var = 'c'; /*if COLS is bigger than for condition 1*/
+    }
+  
+  else if (LINES >= 53 && COLS >= 160 && LINES < 62 && COLS < 230) {
+      terminal_window_size = 2; /*breakpoint for visuals if the window is medium big*/
+  }
+
+  else if (LINES >= 62 && COLS < 230 && COLS >= 160) {
+      terminal_window_size = 2.5;
+      condition_exceeding_var = 'l'; /*if LINES is bigger than for condition 2*/
+    }
+
+    else if (LINES < 62 && COLS >= 230 && LINES >= 53) {
+      terminal_window_size = 2.5;
+      condition_exceeding_var = 'c'; /*if COLS is bigger than for condition 2*/
+    }
+
+  else if (LINES >= 62 && COLS >= 230) {
+    terminal_window_size = 3; /*breakpoint for visuals if the window is fullscreen or >*/
+  }
+
+  else if (LINES < 45 || COLS < 125) {
+    attron(COLOR_PAIR (1));
+    mvaddstr(MIDDLE_Y_AXIS, MIDDLE_X_AXIS-18, "The terminal size you chose is too small");
+    mvaddstr(MIDDLE_Y_AXIS+1, MIDDLE_X_AXIS-18, "Restart the game and expand it more");
+
+    mvaddstr(MIDDLE_Y_AXIS+3, MIDDLE_X_AXIS-18, "Valitsemasi ikkunan koko on liian pieni");
+    mvaddstr(MIDDLE_Y_AXIS+4, MIDDLE_X_AXIS-18, " ..                         ......");
+    mvaddstr(MIDDLE_Y_AXIS+5, MIDDLE_X_AXIS-18, "Kaynnista peli uudestaan ja saada ikkuna isommaksi");
+    attroff(COLOR_PAIR (1));
+    refresh();
+    napms(5000);
+    endwin();
+    return 0;
+  }
+
   LanguageSelectMenu(MIDDLE_Y_AXIS, MIDDLE_X_AXIS);
   keypad(stdscr, TRUE);
   noecho();
@@ -323,7 +393,7 @@ int main(void) {
   mvaddstr(MIDDLE_Y_AXIS+15, MIDDLE_X_AXIS-22, "You have chosen a language / Olet valinnut kielen");
   attroff(COLOR_PAIR (1));
   refresh();
-  napms(5000);
+  napms(1000);
   clear();
 
   /*--------------------First part of the story---------------------*/
@@ -335,30 +405,39 @@ int main(void) {
   ParkMap.Print_Chapter_text(MIDDLE_Y_AXIS, MIDDLE_X_AXIS-22);
   attroff(COLOR_PAIR (1));
   refresh();
-  napms(5000);
+  napms(1000);
 
-  PrintPark();
-  PrintDebugInfo(); /*temp*/
+  PrintPark(/*terminal_window_size*/);
+  PrintParkWoods(terminal_window_size, condition_exceeding_var);
+  PrintDebugInfo(terminal_window_size, condition_exceeding_var); /*temp*/
   refresh();
 
-  /*test*/
-  WINDOW* dialogueBox = newwin(5, 30, LINES-10, MIDDLE_X_AXIS-15);
+  /*----------test----------*/
+  WINDOW* dialogueBox = newwin(7, 35, LINES-8, MIDDLE_X_AXIS-18);
   box(dialogueBox, 0, 0);
   wrefresh(dialogueBox);
   mvwprintw(dialogueBox, 1, 1, "This is a dialogue box!");
   wrefresh(dialogueBox);
   napms(5000);
-  destroy_win(dialogueBox);
-  PrintPark();
-  PrintDebugInfo(); /*temp*/
-  refresh();
-  /**/
+  //PrintPark(/*terminal_window_size*/);
+  //PrintParkWoods(terminal_window_size);
+  //PrintDebugInfo(); /*temp*/
+  //refresh();
+  /*------------------------*/
   
   /*while (playerpark_x != ParkMap.exit_x && playerpark_y != ParkMap.exit_y) {
     
   }
   refresh();*/
-  napms(10000); /*temp*/
+  //napms(10000); /*temp*/
+  int end_debug; /*temp*/
+  while (end_debug != KEY_F(1)) {
+    end_debug=getch(); /*temp*/
+  }
+
+  destroy_win(dialogueBox);
+  delwin(dialogueBox);
+
 /*------------------------------------------------------------------*/
 
 /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/

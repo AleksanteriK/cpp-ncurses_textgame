@@ -1,4 +1,3 @@
-#include <iostream>
 #include "gamefunctions.h"
 
 #define MIDDLE_Y_AXIS (LINES/2)
@@ -20,16 +19,16 @@ void WriteDialogue() {
     /*Logic for game-related output, conversations, and text*/
 }
 
-void PrintDebugInfo(/*int& scaleY, int& scaleX*/) {
+void PrintDebugInfo(float& first_debug_item, char& line_col_exceeding) {
    if (LINES>=45 && LINES<=75) {
   attron(COLOR_PAIR(6));
   mvaddstr(LINES-LINES+1,COLS-COLS+1, "Terminal size:");
   mvprintw(LINES-LINES+2,COLS-COLS+1, "Lines: %d",LINES);
   mvprintw(LINES-LINES+3,COLS-COLS+1, "Cols: %d",COLS);
-  mvprintw(LINES-LINES+4,COLS-COLS+1, "mid_y: %d",MIDDLE_Y_AXIS);
-  mvprintw(LINES-LINES+5,COLS-COLS+1, "mid_x: %d",MIDDLE_X_AXIS);
-  /*mvprintw(LINES-LINES+6,COLS-COLS+1, "scale_y: %d",scaleY);
-  mvprintw(LINES-LINES+7,COLS-COLS+1, "scale_x: %d",scaleX);*/
+  mvprintw(LINES-LINES+4,COLS-COLS+1, "mid_y: %d", MIDDLE_Y_AXIS);
+  mvprintw(LINES-LINES+5,COLS-COLS+1, "mid_x: %d", MIDDLE_X_AXIS);
+  mvprintw(LINES-LINES+6,COLS-COLS+1, "terminal_window_size: %f", first_debug_item);
+  mvprintw(LINES-LINES+7,COLS-COLS+1, "exceeding variable: %c", line_col_exceeding);
   attroff(COLOR_PAIR(6));
   }
 
@@ -38,10 +37,10 @@ void PrintDebugInfo(/*int& scaleY, int& scaleX*/) {
   mvaddstr(40,1, "Terminal size:");
   mvprintw(41,1, "Lines: %d",LINES);
   mvprintw(42,1, "Cols: %d",COLS);
-  mvprintw(43,1, "mid_y: %d",MIDDLE_Y_AXIS);
-  mvprintw(44,1, "mid_x: %d",MIDDLE_X_AXIS);
-  /*mvprintw(45,1, "scale_y: %d",scaleY);
-  mvprintw(46,1, "scale_x: %d",scaleX);*/
+  mvprintw(43,1, "mid_y: %d", MIDDLE_Y_AXIS);
+  mvprintw(45,1, "mid_x: %d", MIDDLE_X_AXIS);
+  mvprintw(46,1, "terminal_window_size: %f",first_debug_item);
+  mvprintw(47,1, "exceeding variable: %c", line_col_exceeding);
   attroff(COLOR_PAIR(6));
   }
 }

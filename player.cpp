@@ -1,8 +1,5 @@
 #include "player.h"
 
-#define MIDDLE_Y_AXIS (LINES/2)
-#define MIDDLE_X_AXIS (COLS/2)
-
 Player::Player(int position_x, int position_y) {
     this -> position_x = position_x;
     this -> position_y = position_y;
