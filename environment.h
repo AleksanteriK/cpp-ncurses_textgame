@@ -5,6 +5,8 @@
 #include <curses.h>
 #include <ncurses.h>
 #include <unistd.h>
+#include <vector>
+
 
 /*Displaying elements on the screen, such as ponds, trees, etc.*/
 void PrintPark(/*std::string& terminal_window_size*/); 

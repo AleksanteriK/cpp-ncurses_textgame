@@ -30,7 +30,7 @@
  VERSIONS:
        
 
-       Version history:
+       Version history: 1.12.2023 ~830 lines of code
 
 **********************************************************************/
 
@@ -409,7 +409,7 @@ int main(void) {
 
   PrintPark(/*terminal_window_size*/);
   PrintParkWoods(terminal_window_size, condition_exceeding_var);
-  PrintDebugInfo(terminal_window_size, condition_exceeding_var); /*temp*/
+  //PrintDebugInfo(terminal_window_size, condition_exceeding_var); /*temp*/
   refresh();
 
   /*----------test----------*/

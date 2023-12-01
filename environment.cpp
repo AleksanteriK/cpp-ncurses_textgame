@@ -75,6 +75,44 @@ void PrintParkWoods(float terminal_window_size, char& line_col_exceeding) {
     leftsidetrees = cr_parktrees(23, 47, 1, 1);
     rightsidetrees = cr_parktrees(23, 46, 1, COLS - 47);
     above_esker = cr_eskers(14, 26, 1, MIDDLE_X_AXIS - 12);
+
+    std::vector<int> left_thin_y = {1, 4, 8, 12, 16, 10, 5, 12};
+    std::vector<int> left_thin_x = {30, 9, 22, 10, 43, 41, 15, 38};
+    std::vector<int> left_thick_y = {6, 10, 19, 15, 18, 10, 17, 1};
+    std::vector<int> left_thick_x = {25, 15, 8, 35, 40, 7, 23, 3};
+
+    std::vector<int> right_thin_y = {1, 4, 8, 12, 16, 10, 5, 12};
+    std::vector<int> right_thin_x = {27, 9, 22, 11, 39, 33, 15, 38};
+    std::vector<int> right_thick_y = {6, 10, 19, 15, 20, 10, 17, 1};
+    std::vector<int> right_thick_x = {25, 15, 8, 30, 38, 7, 23, 3};
+
+  for (int i = 0; i < 8; i++) {
+      int new_thin_Y = left_thin_y[i] + 1;
+      int new_thick_Y = left_thick_y[i] + 1;
+      errorcheck = thintree.SpawnThin_in_Window(leftsidetrees, left_thin_y[i], left_thin_x[i], new_thin_Y, left_thin_x[i], new_thin_Y + 1, left_thin_x[i]);
+      errorcheck = thicktree.SpawnThick_in_Window(leftsidetrees, left_thick_y[i], left_thick_x[i], new_thick_Y, left_thick_x[i], new_thick_Y + 1, left_thick_x[i]);
+
+      if (errorcheck == 1) {
+        attron(COLOR_PAIR(1));
+        mvaddstr(MIDDLE_Y_AXIS, MIDDLE_X_AXIS - 10, "Method returned error");
+        attroff(COLOR_PAIR(1));
+        refresh();
+      }
+    }
+
+  for (int i = 0; i < 8; i++) {
+      int new_thin_Y = right_thin_y[i] + 1;
+      int new_thick_Y = right_thick_y[i] + 1;
+      errorcheck = thintree.SpawnThin_in_Window(rightsidetrees, right_thin_y[i], right_thin_x[i], new_thin_Y, right_thin_x[i], new_thin_Y + 1, right_thin_x[i]);
+      errorcheck = thicktree.SpawnThick_in_Window(rightsidetrees, right_thick_y[i], right_thick_x[i], new_thick_Y, right_thick_x[i], new_thick_Y + 1, right_thick_x[i]);
+
+      if (errorcheck == 1) {
+        attron(COLOR_PAIR(1));
+        mvaddstr(MIDDLE_Y_AXIS, MIDDLE_X_AXIS - 10, "Method returned error");
+        attroff(COLOR_PAIR(1));
+        refresh();
+      }
+    }
   }
 
   else if (terminal_window_size == 1.5 && line_col_exceeding == 'c') {
@@ -113,62 +151,8 @@ void PrintParkWoods(float terminal_window_size, char& line_col_exceeding) {
     above_esker = cr_eskers(23, 26, 1, MIDDLE_X_AXIS - 12);
   }
 
-  /*Coordinates where the trees are spawned in the windows*/
-  int y[6] = {1, 4, 8, 12, 16, 19};
-  int x[10] = {15, 23, 3, 9, 30, 35, 42, 19, 34, 15};
-  /*Coordinates where the esker is spawned in the window*/
   int ex[7] = {1, 4, 7, 10, 14, 18, 22};
   int ey[7] = {1, 2, 3, 2, 1, 2, 3};
-
-  // Printing the trees to the left
-  for (int i = 0; i < 6; i++) {
-    int newY = y[i] + 1;
-    errorcheck = thicktree.SpawnThick_in_Window(leftsidetrees, y[i], x[i], newY, x[i], newY + 1, x[i]);
-
-    if (errorcheck == 1) {
-      attron(COLOR_PAIR (1));
-      mvaddstr(MIDDLE_Y_AXIS, MIDDLE_X_AXIS-10, "Method returned error");
-      attroff(COLOR_PAIR (1));
-      refresh();
-    }
-  }
-
-  for (int i = 5; i < 10; i++) {
-    int newY = y[i - 5] + 1;
-    errorcheck = thintree.SpawnThin_in_Window(leftsidetrees, y[i - 5], x[i], newY, x[i], newY + 1, x[i]);
-
-    if (errorcheck == 1) {
-      attron(COLOR_PAIR (1));
-      mvaddstr(MIDDLE_Y_AXIS, MIDDLE_X_AXIS-10, "Method returned error");
-      attroff(COLOR_PAIR (1));
-      refresh();
-    }
-  }
-
-  // Printing the trees to the right
-  for (int i = 0; i < 6; i++) {
-    int newY = y[i] + 1;
-    errorcheck = thicktree.SpawnThick_in_Window(rightsidetrees, y[i], x[i], newY, x[i], newY + 1, x[i]);
-
-    if (errorcheck == 1) {
-      attron(COLOR_PAIR (1));
-      mvaddstr(MIDDLE_Y_AXIS, MIDDLE_X_AXIS-10, "Method returned error");
-      attroff(COLOR_PAIR (1));
-      refresh();
-    }
-  }
-
-  for (int i = 5; i < 10; i++) {
-    int newY = y[i - 5] + 1;
-    errorcheck = thintree.SpawnThin_in_Window(rightsidetrees, y[i - 5], x[i], newY, x[i], newY + 1, x[i]);
-
-    if (errorcheck == 1) {
-      attron(COLOR_PAIR (1));
-      mvaddstr(MIDDLE_Y_AXIS, MIDDLE_X_AXIS-10, "Method returned error");
-      attroff(COLOR_PAIR (1));
-      refresh();
-    }
-  }
 
   // Printing the esker above the pond
   for (int i = 0; i < 7; i++) {
