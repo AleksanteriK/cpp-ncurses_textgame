@@ -70,6 +70,11 @@ and the game itself is played in a "hidden" x,y grid.
 #include "titles_menus.h"
 #include "map_class.h"
 #include "woods_classes.h"
+#include "inventory.h"
+#include "item.h"
+#include "gun.h"
+#include "chapters.h"
+
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <ios>
@@ -288,6 +293,7 @@ int main(void) {
   init_pair(7, COLOR_WHITE, COLOR_BLUE); /*Water*/
   init_pair(6, COLOR_RED, COLOR_GREEN); /*Error*/
   init_pair(9, COLOR_BLACK, COLOR_GREEN); /*for menu title and underline*/
+  init_pair(10, COLOR_BLACK, COLOR_MAGENTA); /*Dialoguebox background*/
   curs_set(0);
 /*------------------------------------------------------------------*/
 
@@ -397,12 +403,20 @@ int main(void) {
 
   /*--------------------First part of the story---------------------*/
   Map ParkMap(15, 15, 3, 3, 7, 7, 15, 15, "Part 1: Into the unknown / Osa 1: Kohti tuntematonta");
-  int playerpark_y=ParkMap.playerpos_y;
-  int playerpark_x=ParkMap.playerpos_x;
-  Player firstplayer(playerpark_x, playerpark_y);
+  int player_position_in_park_x = ParkMap.ReturnPlayer_x();
+  int player_position_in_park_y = ParkMap.ReturnPlayer_y();
+  Player firstplayer(player_position_in_park_x, player_position_in_park_y);
+  WINDOW *dialogueBox;
+  bool bigdialoguebox = FALSE;
+  
+  if (COLS > 300) {
+    bigdialoguebox = TRUE;
+  }
+
   attron(COLOR_PAIR (1));
-  ParkMap.Print_Chapter_text(MIDDLE_Y_AXIS, MIDDLE_X_AXIS-22);
+  ParkMap.Print_Chapter_text(MIDDLE_Y_AXIS, MIDDLE_X_AXIS-23);
   attroff(COLOR_PAIR (1));
+
   refresh();
   napms(1000);
 
@@ -410,26 +424,40 @@ int main(void) {
   PrintParkWoods(terminal_window_size, condition_exceeding_var);
   PrintDebugInfo(terminal_window_size, condition_exceeding_var); /*temp*/
   refresh();
+  
+  if (terminal_window_size < 2.5 && bigdialoguebox == FALSE) {
+    dialogueBox = newwin(15, COLS, LINES - 15, 0);
+    box(dialogueBox, 0, 0);
+    mvwprintw(dialogueBox, 1, 1, "Dummy");
+    wrefresh(dialogueBox);
+    napms(5000);
+    refresh();
+  } 
+
+  else if (terminal_window_size >= 2.5 && terminal_window_size <= 3.1 && bigdialoguebox == FALSE) {
+    dialogueBox = newwin(20, COLS, LINES - 20, 0);
+    box(dialogueBox, 0, 0);
+    mvwprintw(dialogueBox, 1, 1, "Dummy");
+    wrefresh(dialogueBox);
+    napms(5000);
+    refresh();
+  }
+
+  else if (bigdialoguebox == TRUE && LINES > 70) {
+    dialogueBox = newwin(27, COLS, LINES - 27, 0);
+    box(dialogueBox, 0, 0);
+    mvwprintw(dialogueBox, 1, 1, "Dummy");
+    wrefresh(dialogueBox);
+    napms(5000);
+    refresh();
+  }
 
   /*----------test----------*/
-  WINDOW* dialogueBox = newwin(7, 35, LINES-8, MIDDLE_X_AXIS-18);
-  box(dialogueBox, 0, 0);
-  wrefresh(dialogueBox);
-  mvwprintw(dialogueBox, 1, 1, "This is a dialogue box!");
-  wrefresh(dialogueBox);
-  napms(5000);
-  refresh();
-  /*------------------------*/
-  
-  /*while (playerpark_x != ParkMap.exit_x && playerpark_y != ParkMap.exit_y) {
-    
-  }
-  refresh();*/
-  //napms(10000); /*temp*/
   int end_debug; /*temp*/
   while (end_debug != KEY_F(1)) {
     end_debug=getch(); /*temp*/
   }
+  /*------------------------*/
 
   destroy_win(dialogueBox);
   delwin(dialogueBox);

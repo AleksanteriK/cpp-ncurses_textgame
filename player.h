@@ -1,10 +1,14 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "inventory.h"
+#include "gun.h"
+
 class Player {
 public:
     int position_x;
     int position_y;
+    Inventory Inventory;
 
     Player(int startX, int startY);
 

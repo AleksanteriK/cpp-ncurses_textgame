@@ -43,7 +43,7 @@ WINDOW *cr_eskers(int height, int width, int starty, int startx) {
 WINDOW *Text_window(int height, int width, int starty, int startx) {
     WINDOW *local_win;
     local_win = newwin(height, width, starty, startx);
-    box(local_win, 0, 0);
+    wbkgd(local_win, COLOR_PAIR(1));
     wrefresh(local_win);
     return local_win;
 }
