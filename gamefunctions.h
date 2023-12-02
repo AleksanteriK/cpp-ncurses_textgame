@@ -5,8 +5,6 @@
 #include <string>
 #include <curses.h>
 
-WINDOW *Text_window(int height, int width, int starty, int startx);
-
 std::string Userinput();
 
 void WriteDialogue();

@@ -21,7 +21,7 @@
 
 /*********************************************************************
 
- NAME: Text adventure game / Tekstiseikkailupeli
+ NAME: PROJECT NAME Behind The Curtain / Verhon Takaa
 
 
  DESCRIPTION:
@@ -62,7 +62,6 @@ and the game itself is played in a "hidden" x,y grid.
 #include <ncurses.h>
 #include <curses.h>
 #include <unistd.h>
-#include <cmath>
 #include "environment.h"
 #include "player.h"
 #include "gamewindows.h"
@@ -282,7 +281,7 @@ int main(void) {
   }
 
   start_color();
-  init_pair(1, COLOR_WHITE, COLOR_BLACK); /*FIRST languagemenu background and text*/
+  init_pair(1, COLOR_WHITE, COLOR_BLACK); /*FIRST language menu background and text*/
   init_pair(3, COLOR_CYAN, COLOR_CYAN); /*FIRST menu decorations*/
   init_pair(5, COLOR_BLACK, COLOR_CYAN); /*Select language text*/
   init_pair(8, COLOR_BLACK, COLOR_GREEN);  /*Forest*/
@@ -409,7 +408,7 @@ int main(void) {
 
   PrintPark(/*terminal_window_size*/);
   PrintParkWoods(terminal_window_size, condition_exceeding_var);
-  //PrintDebugInfo(terminal_window_size, condition_exceeding_var); /*temp*/
+  PrintDebugInfo(terminal_window_size, condition_exceeding_var); /*temp*/
   refresh();
 
   /*----------test----------*/
@@ -419,10 +418,7 @@ int main(void) {
   mvwprintw(dialogueBox, 1, 1, "This is a dialogue box!");
   wrefresh(dialogueBox);
   napms(5000);
-  //PrintPark(/*terminal_window_size*/);
-  //PrintParkWoods(terminal_window_size);
-  //PrintDebugInfo(); /*temp*/
-  //refresh();
+  refresh();
   /*------------------------*/
   
   /*while (playerpark_x != ParkMap.exit_x && playerpark_y != ParkMap.exit_y) {

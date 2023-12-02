@@ -3,14 +3,6 @@
 #define MIDDLE_Y_AXIS (LINES/2)
 #define MIDDLE_X_AXIS (COLS/2)
 
-WINDOW *Text_window(int height, int width, int starty, int startx) {
-    WINDOW *local_win;
-    local_win = newwin(height, width, starty, startx);
-    box(local_win, 0, 0);
-    wrefresh(local_win);
-    return local_win;
-}
-
 std::string Userinput() {
     return "Temp";  /*Placeholder return value*/
 }
@@ -22,13 +14,13 @@ void WriteDialogue() {
 void PrintDebugInfo(float& first_debug_item, char& line_col_exceeding) {
    if (LINES>=45 && LINES<=75) {
   attron(COLOR_PAIR(6));
-  mvaddstr(LINES-LINES+1,COLS-COLS+1, "Terminal size:");
-  mvprintw(LINES-LINES+2,COLS-COLS+1, "Lines: %d",LINES);
-  mvprintw(LINES-LINES+3,COLS-COLS+1, "Cols: %d",COLS);
-  mvprintw(LINES-LINES+4,COLS-COLS+1, "mid_y: %d", MIDDLE_Y_AXIS);
-  mvprintw(LINES-LINES+5,COLS-COLS+1, "mid_x: %d", MIDDLE_X_AXIS);
-  mvprintw(LINES-LINES+6,COLS-COLS+1, "terminal_window_size: %f", first_debug_item);
-  mvprintw(LINES-LINES+7,COLS-COLS+1, "exceeding variable: %c", line_col_exceeding);
+  mvaddstr(LINES-7, COLS-COLS+1, "Terminal size:");
+  mvprintw(LINES-6, COLS-COLS+1, "Lines: %d",LINES);
+  mvprintw(LINES-5, COLS-COLS+1, "Cols: %d",COLS);
+  mvprintw(LINES-4, COLS-COLS+1, "mid_y: %d", MIDDLE_Y_AXIS);
+  mvprintw(LINES-3, COLS-COLS+1, "mid_x: %d", MIDDLE_X_AXIS);
+  mvprintw(LINES-2, COLS-COLS+1, "terminal_window_size: %f", first_debug_item);
+  mvprintw(LINES-1, COLS-COLS+1, "exceeding variable: %c", line_col_exceeding);
   attroff(COLOR_PAIR(6));
   }
 
