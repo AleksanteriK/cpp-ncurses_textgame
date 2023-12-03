@@ -18,12 +18,6 @@ void ThickTree::SpawnThick(int up_y, int up_x, int mid_y, int mid_x, int bottom_
 }
 
 int ThickTree::SpawnThick_in_Window(WINDOW *win, int up_y, int up_x, int mid_y, int mid_x, int bottom_y, int bottom_x) {
-    std::cout << "SpawnThick_in_Window called" << std::endl; //this should be visible in console after program is closed
-    /*attron(COLOR_PAIR(6));
-    mvaddstr(LINES-LINES+8,COLS-COLS+1, "Printing thickrees successful");
-    attroff(COLOR_PAIR(6));*/
-    refresh();
-
     mvwprintw(win, up_y, up_x, " /|\\");
     
     if (mvwprintw(win, up_y, up_x, " /|\\") == ERR) {
@@ -73,11 +67,6 @@ void ThinTree::SpawnThin(int up_y, int up_x, int mid_y, int mid_x, int bottom_y,
 }
 
 int ThinTree::SpawnThin_in_Window(WINDOW *win, int up_y, int up_x, int mid_y, int mid_x, int bottom_y, int bottom_x) {
-    std::cout << "SpawnThin_in_Window called" << std::endl; //this should be visible in console after program is closed
-    /*attron(COLOR_PAIR(6));
-    mvaddstr(LINES-LINES+9,COLS-COLS+1, "Printing thintrees successful");
-    attroff(COLOR_PAIR(6));*/
-    refresh();
     mvwprintw(win, up_y, up_x, "  ^");
 
     if (mvwprintw(win, up_y, up_x, "  ^") == ERR) {

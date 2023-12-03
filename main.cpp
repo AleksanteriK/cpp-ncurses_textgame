@@ -291,7 +291,7 @@ int main(void) {
   init_pair(5, COLOR_BLACK, COLOR_CYAN); /*Select language text*/
   init_pair(8, COLOR_BLACK, COLOR_GREEN);  /*Forest*/
   init_pair(7, COLOR_WHITE, COLOR_BLUE); /*Water*/
-  init_pair(6, COLOR_RED, COLOR_GREEN); /*Error*/
+  init_pair(6, COLOR_RED, COLOR_BLACK); /*Error and debug*/
   init_pair(9, COLOR_BLACK, COLOR_GREEN); /*for menu title and underline*/
   init_pair(10, COLOR_BLACK, COLOR_MAGENTA); /*Dialoguebox background*/
   curs_set(0);
@@ -385,7 +385,8 @@ int main(void) {
         break;
 
         case KEY_F(10):
-        NULL; /*Placeholder*/
+        mvaddstr(MIDDLE_Y_AXIS + 7, MIDDLE_X_AXIS-18, "Nothing yet here");
+        refresh();
         break;
 
         default:
@@ -422,15 +423,13 @@ int main(void) {
 
   PrintPark(/*terminal_window_size*/);
   PrintParkWoods(terminal_window_size, condition_exceeding_var);
-  PrintDebugInfo(terminal_window_size, condition_exceeding_var); /*temp*/
-  refresh();
-  
+
   if (terminal_window_size < 2.5 && bigdialoguebox == FALSE) {
     dialogueBox = newwin(15, COLS, LINES - 15, 0);
     box(dialogueBox, 0, 0);
     mvwprintw(dialogueBox, 1, 1, "Dummy");
     wrefresh(dialogueBox);
-    napms(5000);
+    PrintDebugInfo(terminal_window_size, condition_exceeding_var); /*temp*/
     refresh();
   } 
 
@@ -439,7 +438,7 @@ int main(void) {
     box(dialogueBox, 0, 0);
     mvwprintw(dialogueBox, 1, 1, "Dummy");
     wrefresh(dialogueBox);
-    napms(5000);
+    PrintDebugInfo(terminal_window_size, condition_exceeding_var); /*temp*/
     refresh();
   }
 
@@ -448,7 +447,7 @@ int main(void) {
     box(dialogueBox, 0, 0);
     mvwprintw(dialogueBox, 1, 1, "Dummy");
     wrefresh(dialogueBox);
-    napms(5000);
+    PrintDebugInfo(terminal_window_size, condition_exceeding_var); /*temp*/
     refresh();
   }
 

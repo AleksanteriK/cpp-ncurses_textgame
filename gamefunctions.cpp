@@ -14,13 +14,13 @@ void WriteDialogue() {
 void PrintDebugInfo(float& first_debug_item, char& line_col_exceeding) {
    if (LINES>=45 && LINES<=75) {
   attron(COLOR_PAIR(6));
-  mvaddstr(LINES - 7, COLS - 15, "Terminal size:");
-  mvprintw(LINES - 6, COLS - 15, "Lines: %d",LINES);
-  mvprintw(LINES - 5, COLS - 15, "Cols: %d",COLS);
-  mvprintw(LINES - 4, COLS - 15, "mid_y: %d", MIDDLE_Y_AXIS);
-  mvprintw(LINES - 3, COLS - 15, "mid_x: %d", MIDDLE_X_AXIS);
-  mvprintw(LINES - 2, COLS - 15, "terminal_window_size: %f", first_debug_item);
-  mvprintw(LINES - 1, COLS - 15, "exceeding variable: %c", line_col_exceeding);
+  mvaddstr(LINES - 8, COLS - 33, "Terminal size:");
+  mvprintw(LINES - 7, COLS - 33, "Lines: %d",LINES);
+  mvprintw(LINES - 6, COLS - 33, "Cols: %d",COLS);
+  mvprintw(LINES - 5, COLS - 33, "mid_y: %d", MIDDLE_Y_AXIS);
+  mvprintw(LINES - 4, COLS - 33, "mid_x: %d", MIDDLE_X_AXIS);
+  mvprintw(LINES - 3, COLS - 33, "terminal_window_size: %f", first_debug_item);
+  mvprintw(LINES - 2, COLS - 33, "exceeding variable: %c", line_col_exceeding);
   attroff(COLOR_PAIR(6));
   }
 

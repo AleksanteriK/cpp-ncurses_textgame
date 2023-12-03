@@ -8,7 +8,7 @@ class Player {
 public:
     int position_x;
     int position_y;
-    Inventory Inventory;
+    Inventory PlayerInventory;
 
     Player(int startX, int startY);
 
