@@ -74,6 +74,7 @@ and the game itself is played in a "hidden" x,y grid.
 #include "item.h"
 #include "gun.h"
 #include "chapters.h"
+#include "dialog.h"
 
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -399,67 +400,36 @@ int main(void) {
   mvaddstr(MIDDLE_Y_AXIS+15, MIDDLE_X_AXIS-22, "You have chosen a language / Olet valinnut kielen");
   attroff(COLOR_PAIR (1));
   refresh();
-  napms(1000);
+  napms(3000);
   clear();
 
   /*--------------------First part of the story---------------------*/
   Map ParkMap(15, 15, 3, 3, 7, 7, 15, 15, "Part 1: Into the unknown / Osa 1: Kohti tuntematonta");
-  int player_position_in_park_x = ParkMap.ReturnPlayer_x();
-  int player_position_in_park_y = ParkMap.ReturnPlayer_y();
-  Player firstplayer(player_position_in_park_x, player_position_in_park_y);
-  WINDOW *dialogueBox;
-  bool bigdialoguebox = FALSE;
-  
-  if (COLS > 300) {
-    bigdialoguebox = TRUE;
-  }
-
   attron(COLOR_PAIR (1));
   ParkMap.Print_Chapter_text(MIDDLE_Y_AXIS, MIDDLE_X_AXIS-23);
   attroff(COLOR_PAIR (1));
-
-  refresh();
-  napms(1000);
-
-  PrintPark(/*terminal_window_size*/);
+  int player_position_in_park_x = ParkMap.ReturnPlayer_x();
+  int player_position_in_park_y = ParkMap.ReturnPlayer_y();
+  Player Firstplayer(player_position_in_park_x, player_position_in_park_y);
+  Dialogue FirstChapterDialogue;
+  PrintPark();
   PrintParkWoods(terminal_window_size, condition_exceeding_var);
-
-  if (terminal_window_size < 2.5 && bigdialoguebox == FALSE) {
-    dialogueBox = newwin(15, COLS, LINES - 15, 0);
-    box(dialogueBox, 0, 0);
-    mvwprintw(dialogueBox, 1, 1, "Dummy");
-    wrefresh(dialogueBox);
-    PrintDebugInfo(terminal_window_size, condition_exceeding_var); /*temp*/
-    refresh();
-  } 
-
-  else if (terminal_window_size >= 2.5 && terminal_window_size <= 3.1 && bigdialoguebox == FALSE) {
-    dialogueBox = newwin(20, COLS, LINES - 20, 0);
-    box(dialogueBox, 0, 0);
-    mvwprintw(dialogueBox, 1, 1, "Dummy");
-    wrefresh(dialogueBox);
-    PrintDebugInfo(terminal_window_size, condition_exceeding_var); /*temp*/
-    refresh();
-  }
-
-  else if (bigdialoguebox == TRUE && LINES > 70) {
-    dialogueBox = newwin(27, COLS, LINES - 27, 0);
-    box(dialogueBox, 0, 0);
-    mvwprintw(dialogueBox, 1, 1, "Dummy");
-    wrefresh(dialogueBox);
-    PrintDebugInfo(terminal_window_size, condition_exceeding_var); /*temp*/
-    refresh();
-  }
+  FirstChapterDialogue.printDialogBox(terminal_window_size);
+  PrintDebugInfo(terminal_window_size, condition_exceeding_var); /*temp*/
+  refresh();
 
   /*----------test----------*/
+  std::cout << "Debug: Before while loop" << std::endl;
   int end_debug; /*temp*/
   while (end_debug != KEY_F(1)) {
+    std::cout << "Debug: Inside while loop, key pressed: " << end_debug << std::endl;
     end_debug=getch(); /*temp*/
   }
+  std::cout << "Debug: After while loop" << std::endl;
   /*------------------------*/
 
-  destroy_win(dialogueBox);
-  delwin(dialogueBox);
+  destroy_win(FirstChapterDialogue.dialogueBox);
+  delwin(FirstChapterDialogue.dialogueBox);
 
 /*------------------------------------------------------------------*/
 

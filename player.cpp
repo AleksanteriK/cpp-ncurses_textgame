@@ -5,26 +5,30 @@ Player::Player(int position_x, int position_y) {
     this -> position_y = position_y;
 }
 
-void Player::MoveRight() {
+void setCommands () {
+    
+}
+
+void Player::moveRight() {
     position_x++;
 }
 
-void Player::MoveLeft() {
+void Player::moveLeft() {
     position_x--;
 }
 
-void Player::MoveForward() {
+void Player::moveForward() {
     position_y++;
 }
 
-void Player::MoveBack() {
+void Player::moveBack() {
     position_y--;
 }
 
-int Player::ReturnPosition_y() {
+int Player::returnPosition_y() {
     return position_y;
 }
 
-int Player::ReturnPosition_x() {
+int Player::returnPosition_x() {
     return position_x;
 }

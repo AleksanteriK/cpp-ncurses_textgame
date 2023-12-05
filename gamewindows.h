@@ -14,4 +14,3 @@ WINDOW *Text_window(int height, int width, int starty, int startx);
 void destroy_win(WINDOW *local_win);
 
 #endif
-
