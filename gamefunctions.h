@@ -4,8 +4,9 @@
 #include <iostream>
 #include <string>
 #include <curses.h>
+#include <algorithm>
 
-std::string Userinput();
+std::string TESTUserinput(WINDOW* localwin, float& terminal_window_size);
 
 void WriteDialogue();
 

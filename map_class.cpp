@@ -1,25 +1,83 @@
 #include "map_class.h"
 
-Map::Map(int gridsize_y, int gridsize_x, int player_pos_y, int player_pos_x, 
-int secret_x, int secret_y, int exit_x, int exit_y, std::string chaptertext) {
-    this -> gridsize_y = gridsize_y;
-    this -> gridsize_x = gridsize_x;
-    this -> playerpos_y = player_pos_y;
-    this -> playerpos_x = player_pos_x;
-    this -> secret_x = secret_x;
-    this -> secret_y = secret_y;
-    this -> exit_x = exit_x;
-    this -> exit_y = exit_y;
-    this -> chaptertext = chaptertext;
+Area::Area(int x, int y, const std::string& desc) : x(x), y(y), description(desc) {
+
 }
 
-int Map::ReturnPlayer_y() {
-  return playerpos_y;
-}
-int Map::ReturnPlayer_x() {
-  return playerpos_x;
+void Area::Describe() {
+  //nothing yet
 }
 
-void Map::Print_Chapter_text(int y, int x) {
-  mvprintw(y,x,"%s",chaptertext.c_str());
+//Getters
+int Map::GetGridSizeY() const {
+    return gridsize_y;
+}
+
+int Map::GetGridSizeX() const {
+    return gridsize_x;
+}
+
+int Map::GetPlayerPosY() const {
+    return playerpos_y;
+}
+
+int Map::GetPlayerPosX() const {
+    return playerpos_x;
+}
+
+int Map::GetSecretX() const {
+    return secret_x;
+}
+
+int Map::GetSecretY() const {
+    return secret_y;
+}
+
+int Map::GetExitX() const {
+    return exit_x;
+}
+
+int Map::GetExitY() const {
+    return exit_y;
+}
+
+std::string Map::GetChapterText() const {
+    return chaptertext;
+}
+
+//Setters
+void Map::SetGridSizeY(int size) {
+    gridsize_y = size;
+}
+
+void Map::SetGridSizeX(int size) {
+    gridsize_x = size;
+}
+
+void Map::SetPlayerPosY(int posY) {
+    playerpos_y = posY;
+}
+
+void Map::SetPlayerPosX(int posX) {
+    playerpos_x = posX;
+}
+
+void Map::SetSecretX(int x) {
+    secret_x = x;
+}
+
+void Map::SetSecretY(int y) {
+    secret_y = y;
+}
+
+void Map::SetExitX(int x) {
+    exit_x = x;
+}
+
+void Map::SetExitY(int y) {
+    exit_y = y;
+}
+
+void Map::SetChapterText(const std::string& text) {
+    chaptertext = text;
 }

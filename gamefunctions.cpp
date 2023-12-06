@@ -3,8 +3,45 @@
 #define MIDDLE_Y_AXIS (LINES/2)
 #define MIDDLE_X_AXIS (COLS/2)
 
-std::string Userinput() {
-    return "Temp";  /*Placeholder return value*/
+std::string TESTUserinput(WINDOW* localwin, float& terminal_window_size) {
+    std::string input;
+    bool isbigdialoguebox = FALSE;
+    
+    if (COLS > 300) {
+        isbigdialoguebox = TRUE;
+    }
+
+    if (terminal_window_size < 2.5 && isbigdialoguebox == FALSE) {
+        echo();
+        wmove(localwin, 13, 2);
+        wgetnstr(localwin, &input[0], COLS - 45);
+        noecho();
+        //Remove trailing newline character
+        input.erase('\n');
+        std::cout<<input<<std::endl;
+    } 
+
+    else if (terminal_window_size >= 2.5 && terminal_window_size <= 3.1 && isbigdialoguebox == FALSE) {
+        echo();
+        wmove(localwin, 18, 2);
+        wgetnstr(localwin, &input[0], COLS - 45);
+        noecho();
+        //Remove trailing newline character
+        input.erase('\n');
+        std::cout<<input<<std::endl;
+    }
+
+    else if (isbigdialoguebox == TRUE && LINES > 70) {
+        echo();
+        wmove(localwin, 25, 2);
+        wgetnstr(localwin, &input[0], COLS - 45);
+        noecho();
+        //Remove trailing newline character
+        input.erase('\n');
+        std::cout<<input<<std::endl;
+    }
+
+    return input;
 }
 
 void WriteDialogue() {

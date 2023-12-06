@@ -30,7 +30,7 @@
  VERSIONS:
        
 
-       Version history: 1.12.2023 ~830 lines of code
+Version history: 5.12.2023: 1324 lines of code without empty lines
 
 **********************************************************************/
 
@@ -74,8 +74,7 @@ and the game itself is played in a "hidden" x,y grid.
 #include "item.h"
 #include "gun.h"
 #include "chapters.h"
-#include "dialog.h"
-
+#include "dialogue.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <ios>
@@ -396,40 +395,152 @@ int main(void) {
     }
   }
 
+  if (selectedLanguage == Language::ENGLISH) {
+    attron(COLOR_PAIR (1));
+    mvaddstr(MIDDLE_Y_AXIS+15, MIDDLE_X_AXIS-22, "English chosen");
+    attroff(COLOR_PAIR (1));
+  }
+
+  else {
   attron(COLOR_PAIR (1));
-  mvaddstr(MIDDLE_Y_AXIS+15, MIDDLE_X_AXIS-22, "You have chosen a language / Olet valinnut kielen");
+  mvaddstr(MIDDLE_Y_AXIS+15, MIDDLE_X_AXIS-22, "Suomi valittu");
   attroff(COLOR_PAIR (1));
+  }
+
   refresh();
   napms(3000);
   clear();
 
+  /*This variable get's values from each chapter and depending what the player
+    has done, what choices he/she/non binary has made and they result in a certain
+    outcome that is returned by the chapter. The returned outcome is a string*/
+  std::string outcome = "placeholder";
+
   /*--------------------First part of the story---------------------*/
-  Map ParkMap(15, 15, 3, 3, 7, 7, 15, 15, "Part 1: Into the unknown / Osa 1: Kohti tuntematonta");
-  attron(COLOR_PAIR (1));
-  ParkMap.Print_Chapter_text(MIDDLE_Y_AXIS, MIDDLE_X_AXIS-23);
-  attroff(COLOR_PAIR (1));
-  int player_position_in_park_x = ParkMap.ReturnPlayer_x();
-  int player_position_in_park_y = ParkMap.ReturnPlayer_y();
-  Player Firstplayer(player_position_in_park_x, player_position_in_park_y);
-  Dialogue FirstChapterDialogue;
+  Map ParkMap;
+  ParkMap.SetGridSizeX(12);
+  ParkMap.SetGridSizeY(12);
+  ParkMap.SetSecretX(6);
+  ParkMap.SetSecretY(6);
+  ParkMap.SetExitX(8);
+  ParkMap.SetExitY(8);
+  ParkMap.SetPlayerPosX(3);
+  ParkMap.SetPlayerPosY(12);
+  ParkMap.areas.push_back(Area(3, 12, "This is the beginning"));
+  Player Firstplayer(ParkMap.GetPlayerPosX(), ParkMap.GetPlayerPosY());
+  Dialogue DialogueWindow;
+
   PrintPark();
   PrintParkWoods(terminal_window_size, condition_exceeding_var);
-  FirstChapterDialogue.printDialogBox(terminal_window_size);
+  DialogueWindow.ActivateDialogueBox(terminal_window_size);
+  DialogueWindow.SetCurrentLine(DialogueWindow.GetHeight());
   PrintDebugInfo(terminal_window_size, condition_exceeding_var); /*temp*/
   refresh();
+  napms(1000);
 
+  std::cout << "Debug: Before first AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", currentline: " << DialogueWindow.GetCurrentLine() << std::endl;
+  DialogueWindow.AddDialogue("first test");
+  refresh();
+  napms(1000);
+  std::cout << "Debug: After first AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", " << DialogueWindow.GetCurrentLine() << std::endl;
+
+  std::cout << "Debug: Before second AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", currentline: " << DialogueWindow.GetCurrentLine() << std::endl;
+  DialogueWindow.AddDialogue("second test");
+  refresh();
+  napms(1000);
+  std::cout << "Debug: After second AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", " << DialogueWindow.GetCurrentLine() << std::endl;
+
+  // Repeat the pattern for the next tests...
+  std::cout << "Debug: Before third AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", currentline: " << DialogueWindow.GetCurrentLine() << std::endl;
+  DialogueWindow.AddDialogue("third test");
+  refresh();
+  napms(1000);
+  std::cout << "Debug: After third AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", " << DialogueWindow.GetCurrentLine() << std::endl;
+
+  std::cout << "Debug: Before fourth AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", currentline: " << DialogueWindow.GetCurrentLine() << std::endl;
+  DialogueWindow.AddDialogue("fourth test");
+  refresh();
+  napms(1000);
+  std::cout << "Debug: After fourth AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", " << DialogueWindow.GetCurrentLine() << std::endl;
+
+  std::cout << "Debug: Before fifth AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", currentline: " << DialogueWindow.GetCurrentLine() << std::endl;
+  DialogueWindow.AddDialogue("fifth test");
+  refresh();
+  napms(1000);
+  std::cout << "Debug: After fifth AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", " << DialogueWindow.GetCurrentLine() << std::endl;
+
+  std::cout << "Debug: Before sixth AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", currentline: " << DialogueWindow.GetCurrentLine() << std::endl;
+  DialogueWindow.AddDialogue("sixth test");
+  refresh();
+  napms(1000);
+  std::cout << "Debug: After sixth AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", " << DialogueWindow.GetCurrentLine() << std::endl;
+
+  std::cout << "Debug: Before seventh AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", currentline: " << DialogueWindow.GetCurrentLine() << std::endl;
+  DialogueWindow.AddDialogue("seventh test");
+  refresh();
+  napms(1000);
+  std::cout << "Debug: After seventh AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", " << DialogueWindow.GetCurrentLine() << std::endl;
+
+  std::cout << "Debug: Before eighth AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", currentline: " << DialogueWindow.GetCurrentLine() << std::endl;
+  DialogueWindow.AddDialogue("eighth test");
+  refresh();
+  napms(1000);
+  std::cout << "Debug: After eighth AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", " << DialogueWindow.GetCurrentLine() << std::endl;
+
+  std::cout << "Debug: Before ninth AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", currentline: " << DialogueWindow.GetCurrentLine() << std::endl;
+  DialogueWindow.AddDialogue("ninth test");
+  refresh();
+  napms(1000);
+  std::cout << "Debug: After ninth AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", " << DialogueWindow.GetCurrentLine() << std::endl;
+
+  std::cout << "Debug: Before tenth AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", currentline: " << DialogueWindow.GetCurrentLine() << std::endl;
+  DialogueWindow.AddDialogue("tenth test");
+  refresh();
+  napms(1000);
+  std::cout << "Debug: After tenth AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", " << DialogueWindow.GetCurrentLine() << std::endl;
+
+  std::cout << "Debug: Before eleventh AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", currentline: " << DialogueWindow.GetCurrentLine() << std::endl;
+  DialogueWindow.AddDialogue("eleventh test");
+  refresh();
+  napms(1000);
+  std::cout << "Debug: After eleventh AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", " << DialogueWindow.GetCurrentLine() << std::endl;
+
+  std::cout << "Debug: Before twelfth AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", currentline: " << DialogueWindow.GetCurrentLine() << std::endl;
+  DialogueWindow.AddDialogue("twelfth test");
+  refresh();
+  napms(1000);
+  std::cout << "Debug: After twelfth AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", " << DialogueWindow.GetCurrentLine() << std::endl;
+
+  std::cout << "Debug: Before twelfth AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", currentline: " << DialogueWindow.GetCurrentLine() << std::endl;
+  DialogueWindow.AddDialogue("thirteenth test");
+  refresh();
+  napms(1000);
+  std::cout << "Debug: After twelfth AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", " << DialogueWindow.GetCurrentLine() << std::endl;
+ 
+  std::cout << "Debug: Before twelfth AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", currentline: " << DialogueWindow.GetCurrentLine() << std::endl;
+  DialogueWindow.AddDialogue("fourteenth test");
+  refresh();
+  napms(1000);
+  std::cout << "Debug: After twelfth AddDialogue - dialoguewindowheight:" << DialogueWindow.GetHeight() << ", " << DialogueWindow.GetCurrentLine() << std::endl;
+  
+  /*testing how input is displayed now*/
+  DialogueWindow.AddDialogue(TESTUserinput(DialogueWindow.dialogueBox, terminal_window_size));
+  refresh();
+  DialogueWindow.AddDialogue(TESTUserinput(DialogueWindow.dialogueBox, terminal_window_size));
+  refresh();
+  DialogueWindow.AddDialogue(TESTUserinput(DialogueWindow.dialogueBox, terminal_window_size));
+  refresh();
   /*----------test----------*/
   std::cout << "Debug: Before while loop" << std::endl;
   int end_debug; /*temp*/
   while (end_debug != KEY_F(1)) {
-    std::cout << "Debug: Inside while loop, key pressed: " << end_debug << std::endl;
     end_debug=getch(); /*temp*/
   }
   std::cout << "Debug: After while loop" << std::endl;
   /*------------------------*/
 
-  destroy_win(FirstChapterDialogue.dialogueBox);
-  delwin(FirstChapterDialogue.dialogueBox);
+  destroy_win(DialogueWindow.dialogueBox);
+  delwin(DialogueWindow.dialogueBox);
 
 /*------------------------------------------------------------------*/
 

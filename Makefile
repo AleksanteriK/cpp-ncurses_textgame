@@ -2,8 +2,8 @@ CXX = g++
 CXXFLAGS = -std=c++11
 LDFLAGS = -lncurses
 
-textadventure: main.o player.o environment.o gamewindows.o gamefunctions.o language.o titles_menus.o woods_classes.o map_class.o inventory.o item.o gun.o chapters.o dialog.o
-	$(CXX) $(CXXFLAGS) -o textadventure main.o player.o environment.o gamewindows.o gamefunctions.o language.o titles_menus.o woods_classes.o map_class.o inventory.o item.o gun.o chapters.o dialog.o $(LDFLAGS)
+textadventure: main.o player.o environment.o gamewindows.o gamefunctions.o language.o titles_menus.o woods_classes.o map_class.o inventory.o item.o gun.o chapters.o dialogue.o
+	$(CXX) $(CXXFLAGS) -o textadventure main.o player.o environment.o gamewindows.o gamefunctions.o language.o titles_menus.o woods_classes.o map_class.o inventory.o item.o gun.o chapters.o dialogue.o $(LDFLAGS)
 
 main.o: main.cpp
 	$(CXX) $(CXXFLAGS) -c main.cpp
@@ -44,8 +44,8 @@ gun.o: gun.cpp gun.h
 chapters.o: chapters.cpp chapters.h
 	$(CXX) $(CXXFLAGS) -c chapters.cpp
 
-dialog.o: dialog.cpp dialog.h
-	$(CXX) $(CXXFLAGS) -c dialog.cpp
+dialogue.o: dialogue.cpp dialogue.h
+	$(CXX) $(CXXFLAGS) -c dialogue.cpp
 
 clean:
 	rm -f *.o textadventure

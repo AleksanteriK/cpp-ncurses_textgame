@@ -3,9 +3,46 @@
 
 #include <string>
 #include <curses.h>
+#include <vector>
+
+class Area {
+  public:
+    int x;
+    int y;
+    std::string description;
+
+    Area(int x, int y, const std::string& desc);
+
+    void Describe();
+};
 
 class Map {
   public:
+    //Getters
+    int GetGridSizeY() const;
+    int GetGridSizeX() const;
+    int GetPlayerPosY() const;
+    int GetPlayerPosX() const;
+    int GetSecretX() const;
+    int GetSecretY() const;
+    int GetExitX() const;
+    int GetExitY() const;
+    std::string GetChapterText() const;
+    std::vector<Area> areas;
+
+    //Setters
+    void SetGridSizeY(int size);
+    void SetGridSizeX(int size);
+    void SetPlayerPosY(int posY);
+    void SetPlayerPosX(int posX);
+    void SetSecretX(int x);
+    void SetSecretY(int y);
+    void SetExitX(int x);
+    void SetExitY(int y);
+    void SetChapterText(const std::string& text);
+
+  private:
+    std::string chaptertext;
     int gridsize_y;
     int gridsize_x;
     int playerpos_y;
@@ -14,15 +51,6 @@ class Map {
     int secret_y;
     int exit_x;
     int exit_y;
-    std::string chaptertext="";
-
-    Map(int gridsize_y, int gridsize_x, int player_pos_y, int player_pos_x,
-    int secret_x, int secret_y, int exit_x, int exit_y, std::string entrancetext);
-    int ReturnPlayer_y();
-    int ReturnPlayer_x();
-
-    /*Prints the name of the chapter which the map in the game is part of*/
-    void Print_Chapter_text(int x, int y);
 };
 
 #endif
