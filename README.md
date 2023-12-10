@@ -1,1 +1,1 @@
-This is going to be an text based adventure game. Pushing versions here.
+This is going to be a text based adventure game. Pushing updates here.
