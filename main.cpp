@@ -8,11 +8,9 @@
  *   License as published by the Free Software Foundation; either version 2*
  *   of the License, or (at your option) any later version.                *
  *                                                                         *
- *   However, all the rights are reserved regarding the game's story itself*
- *   and all the fictional characters who are making appearance            *
  *                                                                         *
- *   This program is distributed in the hope that it will be enter-,       *
- *   taining and fun, but WITHOUT ANY WARRANTY; without even the implied   *
+ *   These source codes are distributed in the hope that it will be        *
+ *   helpful, but WITHOUT ANY WARRANTY; without even the implied           *
  *   warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.      *
  *   See the GNU General Public License for more details.                  *
  *                                                                         *
@@ -21,7 +19,7 @@
 
 /*********************************************************************
 
- NAME: PROJECT NAME Behind The Curtain / Verhon Takaa
+ NAME:
 
 
  DESCRIPTION:
@@ -50,11 +48,6 @@ Cols(x):160   //for most laptops might get these values on fullscreen
 
 Lines(y):62
 Cols(x):230
-
----------------------------------------------------------------------
----------------------------------------------------------------------
-Everything graphical in the game is purely aesthetic, the player moves
-and the game itself is played in a "hidden" x,y grid.
 **********************************************************************/
 
 #include <iostream>
@@ -335,7 +328,7 @@ int main(void) {
       condition_exceeding_var = 'l'; /*if LINES is bigger than for condition 2*/
     }
 
-    else if (LINES < 62 && COLS >= 230 && LINES >= 53) {
+  else if (LINES < 62 && COLS >= 230 && LINES >= 53) {
       terminal_window_size = 2.5;
       condition_exceeding_var = 'c'; /*if COLS is bigger than for condition 2*/
     }
@@ -533,9 +526,11 @@ int main(void) {
   /*----------test----------*/
   std::cout << "Debug: Before while loop" << std::endl;
   int end_debug; /*temp*/
+  
   while (end_debug != KEY_F(1)) {
     end_debug=getch(); /*temp*/
   }
+
   std::cout << "Debug: After while loop" << std::endl;
   /*------------------------*/
 

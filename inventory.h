@@ -11,7 +11,7 @@ public:
 
     void AddItem(const Item& item);
 
-    void DisplayInventoryTerminal();
+    void DisplayInventoryTerminal(); //debug
 };
 
 #endif

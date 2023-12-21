@@ -31,8 +31,10 @@ void Dialogue::AddDialogue(const std::string& line) {
         mvwprintw(dialogueBox, currentline, 2, line.c_str());
         attroff(COLOR_PAIR(1));
         wrefresh(dialogueBox);
-    } else {
-        /*scrolling effect: Move the content of the line above to the current line*/
+    } 
+    
+    else {
+        /*Scrolling effect: Move the content of the line above to the current line*/
         SetCurrentLine(currentline - 1);
         for (int i = 2; i <= COLS - 34; i++) {
             chtype ch = mvwinch(dialogueBox, currentline, i);
@@ -63,7 +65,7 @@ void Dialogue::ActivateDialogueBox(float& terminal_window_size) {
         dialogueBox = newwin(15, COLS, LINES - 15, 0);
         startRow = LINES-12;
         box(dialogueBox, 0, 0);
-        // Print the command prompt at the bottom
+        //Print the command prompt at the bottom
         mvwprintw(dialogueBox, 13, 1, ">");
         wrefresh(dialogueBox);
         refresh();
@@ -74,7 +76,7 @@ void Dialogue::ActivateDialogueBox(float& terminal_window_size) {
         dialogueBox = newwin(20, COLS, LINES - 20, 0);
         startRow = LINES-17;
         box(dialogueBox, 0, 0);
-        // Print the command prompt at the bottom
+        //Print the command prompt at the bottom
         mvwprintw(dialogueBox, 18, 1, ">");
         wrefresh(dialogueBox);
         refresh();
@@ -85,7 +87,7 @@ void Dialogue::ActivateDialogueBox(float& terminal_window_size) {
         dialogueBox = newwin(27, COLS, LINES - 27, 0);
         startRow = LINES-24;
         box(dialogueBox, 0, 0);
-        // Print the command prompt at the bottom
+        //Print the command prompt at the bottom
         mvwprintw(dialogueBox, 25, 1, ">");
         wrefresh(dialogueBox);
         refresh();
